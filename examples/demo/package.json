@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.30.8",
-    "@editorjs-mentions/plugin": "^0.1.2"
+    "@editorjs-mentions/plugin": "file:../../packages/editorjs-mentions"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

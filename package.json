@@ -14,7 +14,10 @@
     "dev:plugin": "npm run dev --workspace @editorjs-mentions/plugin",
     "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo",
     "dev:ldap:up": "docker compose -f examples/server/docker-compose.ldap.yml up -d",
-    "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down"
+    "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down",
+    "version:plugin:patch": "npm version patch --workspace @editorjs-mentions/plugin --no-git-tag-version",
+    "version:plugin:minor": "npm version minor --workspace @editorjs-mentions/plugin --no-git-tag-version",
+    "version:plugin:major": "npm version major --workspace @editorjs-mentions/plugin --no-git-tag-version"
   },
   "repository": {
     "type": "git",

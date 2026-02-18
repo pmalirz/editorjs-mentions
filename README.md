@@ -178,18 +178,26 @@ Shortcuts:
 
 ## Release & Publish
 
-Before publishing `@editorjs-mentions/plugin`:
+Only plugin package version needs bumping.
 
-1. Update plugin metadata URLs in `packages/editorjs-mentions/package.json`:
-   - `repository.url`
-   - `bugs.url`
-   - `homepage`
-2. Bump version in `packages/editorjs-mentions/package.json`.
-3. Build and typecheck:
+Recommended flow:
+
+1. Bump plugin version:
+   - patch: `npm run version:plugin:patch`
+   - minor: `npm run version:plugin:minor`
+   - major: `npm run version:plugin:major`
+2. Refresh lockfile:
+   - `npm install`
+3. Verify:
    - `npm run typecheck --workspace @editorjs-mentions/plugin`
    - `npm run build --workspace @editorjs-mentions/plugin`
-4. Publish from package directory:
-   - `npm publish --access public --workspace @editorjs-mentions/plugin`
+4. Commit changed files (`packages/editorjs-mentions/package.json`, `package-lock.json`).
+5. Create tag/release (for GitHub Actions publish workflow).
+
+Notes:
+
+- `examples/demo` uses local dependency (`file:../../packages/editorjs-mentions`) so demo version does not require manual sync.
+- Root package is private and does not require release version bump.
 
 License: MIT (`LICENSE`).
 
