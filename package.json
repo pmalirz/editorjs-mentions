@@ -1,0 +1,16 @@
+{
+  "name": "editorjs-mentions-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Editor.js mentions plugin + sample REST server",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev:server": "npm run dev --workspace @editorjs-mentions/example-server",
+    "dev:plugin": "npm run dev --workspace @editorjs-mentions/plugin",
+    "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo"
+  }
+}

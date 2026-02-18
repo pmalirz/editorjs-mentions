@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>editorjs-mentions Demo</title>
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel">
+        <h1>Editor.js Mentions Demo</h1>
+        <p>Type <code>@</code> in the editor to trigger mentions autocomplete.</p>
+        <p class="meta">Server endpoint: <code>http://localhost:3001/api/mentions/users</code></p>
+        <div id="editor" class="editor"></div>
+        <div class="data-head">
+          <h2>Raw Editor.js Data</h2>
+          <button id="refresh-data" type="button">Refresh</button>
+        </div>
+        <pre id="raw-data" class="raw-data">Loading...</pre>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
