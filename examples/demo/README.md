@@ -23,3 +23,4 @@ If you changed plugin exports and see browser import errors, restart demo with:
 4. Confirm mention chip is inserted and "Last selected" updates.
 5. Click a mention chip to open the details tooltip.
 6. Check serialized panel for `data.entities[]` containing mention `id`.
+7. Change "Highlight mentions for user" and verify mention styles update immediately.

@@ -16,10 +16,20 @@ import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/
 const mentions = new EditorJSMentions({
   holder: "editor",
   triggerSymbols: ["@"],
+  mentionRenderContext: { currentUserDisplayName: "Joanna Smith" },
+  renderMention: ({ item, defaultText, element, context }) => {
+    const ctx = context as { currentUserDisplayName?: string } | undefined;
+    const isCurrentUser = ctx?.currentUserDisplayName === item.displayName;
+    element.textContent = defaultText;
+    element.style.fontWeight = isCurrentUser ? "700" : "400";
+  },
   provider: createRestMentionProvider({
     endpoint: "http://localhost:3001/api/mentions/users"
   })
 });
+
+mentions.setMentionRenderContext({ currentUserDisplayName: "John Doe" });
+mentions.refreshMentionRendering();
 
 // mentions.destroy();
 ```
@@ -35,6 +45,8 @@ const mentions = new EditorJSMentions({
 - `className?: string` - custom dropdown class.
 - `onSelect?: (item) => void`.
 - `renderItem?: (item) => string` - custom item renderer.
+- `renderMention?: (args) => void` - customize rendered mention anchor per entity state.
+- `mentionRenderContext?: unknown` - dynamic context available in `renderMention`.
 - Clicking a mention opens a small details tooltip (image, name, description, optional link).
 - Copy/cut/paste of mentions inside Editor.js preserves mention metadata (`id`, description, image, link).
 

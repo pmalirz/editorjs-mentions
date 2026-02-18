@@ -11,6 +11,14 @@
         <h1>Editor.js Mentions Demo</h1>
         <p>Type <code>@</code> in the editor to trigger mentions autocomplete.</p>
         <p class="meta">Server endpoint: <code>http://localhost:3001/api/mentions/users</code></p>
+        <label class="meta" for="current-user">
+          Highlight mentions for user:
+          <select id="current-user">
+            <option value="Joanna Smith">Joanna Smith</option>
+            <option value="John Doe">John Doe</option>
+            <option value="">(none)</option>
+          </select>
+        </label>
         <div id="editor" class="editor"></div>
         <div class="data-head">
           <h2>Serialized Output (with Mention Entities)</h2>

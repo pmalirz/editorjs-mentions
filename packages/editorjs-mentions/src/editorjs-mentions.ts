@@ -1,7 +1,7 @@
 import { MentionsDropdown } from "./dropdown";
 import { normalizeProvider } from "./providers";
 import { ensureMentionsStyleInjected } from "./styles";
-import type { MentionItem, MentionsConfig } from "./types";
+import type { MentionItem, MentionRenderSource, MentionsConfig } from "./types";
 
 type ActiveContext = {
   trigger: string;
@@ -14,9 +14,12 @@ type ActiveContext = {
 export class EditorJSMentions {
   private holder: HTMLElement;
   private config: Required<
-    Omit<MentionsConfig, "provider" | "holder" | "onSelect" | "renderItem" | "className">
+    Omit<
+      MentionsConfig,
+      "provider" | "holder" | "onSelect" | "renderItem" | "className" | "renderMention" | "mentionRenderContext"
+    >
   > &
-    Pick<MentionsConfig, "onSelect" | "renderItem" | "className">;
+    Pick<MentionsConfig, "onSelect" | "renderItem" | "className" | "renderMention" | "mentionRenderContext">;
   private provider: ReturnType<typeof normalizeProvider>;
   private dropdown: MentionsDropdown;
   private debounceTimer: number | undefined;
@@ -41,7 +44,9 @@ export class EditorJSMentions {
       debounceMs: config.debounceMs ?? 160,
       onSelect: config.onSelect,
       renderItem: config.renderItem,
-      className: config.className
+      className: config.className,
+      renderMention: config.renderMention,
+      mentionRenderContext: config.mentionRenderContext
     };
 
     this.provider = normalizeProvider(config.provider);
@@ -59,6 +64,25 @@ export class EditorJSMentions {
     document.body.appendChild(this.tooltipRoot);
 
     this.bind();
+    this.refreshMentionRendering();
+  }
+
+  setMentionRenderContext(context: unknown): void {
+    this.config.mentionRenderContext = context;
+    this.refreshMentionRendering();
+  }
+
+  refreshMentionRendering(): void {
+    const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
+    for (const mention of mentions) {
+      const anchor = mention as HTMLAnchorElement;
+      const item = this.readMentionFromElement(anchor);
+      if (!item) {
+        continue;
+      }
+      const trigger = anchor.dataset.mentionTrigger || (anchor.textContent?.startsWith("@") ? "@" : "@");
+      this.applyMentionRendering(anchor, item, trigger, "refresh");
+    }
   }
 
   destroy(): void {
@@ -168,8 +192,18 @@ export class EditorJSMentions {
     range.deleteContents();
 
     const fragment = range.createContextualFragment(normalized);
+    const pastedMentions = Array.from(fragment.querySelectorAll("a.editorjs-mention")) as HTMLAnchorElement[];
     const last = fragment.lastChild;
     range.insertNode(fragment);
+
+    for (const mention of pastedMentions) {
+      const item = this.readMentionFromElement(mention);
+      if (!item) {
+        continue;
+      }
+      const trigger = mention.dataset.mentionTrigger || "@";
+      this.applyMentionRendering(mention, item, trigger, "paste");
+    }
 
     if (last) {
       const caret = document.createRange();
@@ -398,6 +432,7 @@ export class EditorJSMentions {
 
     range.insertNode(trailingSpace);
     range.insertNode(anchor);
+    this.applyMentionRendering(anchor, item, context.trigger, "insert");
 
     const selection = window.getSelection();
     if (selection) {
@@ -470,6 +505,31 @@ export class EditorJSMentions {
       image: anchor.dataset.mentionImage || undefined,
       link: anchor.dataset.mentionLink || undefined
     };
+  }
+
+  private applyMentionRendering(
+    anchor: HTMLAnchorElement,
+    item: MentionItem,
+    trigger: string,
+    source: MentionRenderSource
+  ): void {
+    const defaultText = `${trigger}${item.displayName}`;
+    if (!anchor.textContent || anchor.textContent.trim().length === 0) {
+      anchor.textContent = defaultText;
+    }
+
+    if (!anchor.classList.contains("editorjs-mention")) {
+      anchor.classList.add("editorjs-mention");
+    }
+
+    this.config.renderMention?.({
+      item,
+      trigger,
+      defaultText,
+      element: anchor,
+      source,
+      context: this.config.mentionRenderContext
+    });
   }
 
   private getCaretRect(): DOMRect | null {

@@ -20,6 +20,17 @@ export type MentionProviderObject = {
 
 export type MentionProvider = MentionProviderFn | MentionProviderObject;
 
+export type MentionRenderSource = "insert" | "paste" | "hydrate" | "refresh";
+
+export type MentionRenderArgs = {
+  item: MentionItem;
+  trigger: string;
+  defaultText: string;
+  element: HTMLAnchorElement;
+  source: MentionRenderSource;
+  context?: unknown;
+};
+
 export type MentionsConfig = {
   holder: string | HTMLElement;
   provider: MentionProvider;
@@ -30,6 +41,8 @@ export type MentionsConfig = {
   className?: string;
   onSelect?: (item: MentionItem) => void;
   renderItem?: (item: MentionItem) => string;
+  renderMention?: (args: MentionRenderArgs) => void;
+  mentionRenderContext?: unknown;
 };
 
 export type MentionEntity = {

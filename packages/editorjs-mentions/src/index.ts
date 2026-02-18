@@ -6,6 +6,8 @@ export type {
   EditorJSOutputLike,
   MentionEntity,
   MentionItem,
+  MentionRenderArgs,
+  MentionRenderSource,
   MentionProvider,
   MentionProviderFn,
   MentionProviderObject,

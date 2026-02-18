@@ -56,10 +56,18 @@ await editor.isReady;
 const mentions = new EditorJSMentions({
   holder: "editor",
   triggerSymbols: ["@"],
+  mentionRenderContext: { currentUserDisplayName: "Joanna Smith" },
+  renderMention: ({ item, defaultText, element, context }) => {
+    const ctx = context as { currentUserDisplayName?: string } | undefined;
+    element.textContent = defaultText;
+    element.style.fontWeight = ctx?.currentUserDisplayName === item.displayName ? "700" : "400";
+  },
   provider: createRestMentionProvider({
     endpoint: "http://localhost:3001/api/mentions/users"
   })
 });
+
+mentions.setMentionRenderContext({ currentUserDisplayName: "John Doe" });
 
 // later:
 // mentions.destroy();

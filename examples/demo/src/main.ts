@@ -9,6 +9,8 @@ import "./styles.css";
 
 async function bootstrap(): Promise<void> {
   let saveTimer: number | undefined;
+  const currentUserSelect = document.getElementById("current-user") as HTMLSelectElement | null;
+  const currentUser = currentUserSelect?.value || "";
   const editor = new EditorJS({
     holder: "editor",
     autofocus: true,
@@ -25,10 +27,19 @@ async function bootstrap(): Promise<void> {
 
   await editor.isReady;
 
-  new EditorJSMentions({
+  const mentions = new EditorJSMentions({
     holder: "editor",
     triggerSymbols: ["@"],
     maxResults: 8,
+    mentionRenderContext: { currentUserDisplayName: currentUser },
+    renderMention: ({ item, defaultText, element, context }) => {
+      const ctx = context as { currentUserDisplayName?: string } | undefined;
+      const isCurrentUser = !!ctx?.currentUserDisplayName && ctx.currentUserDisplayName === item.displayName;
+      element.textContent = defaultText;
+      element.style.fontWeight = isCurrentUser ? "700" : "400";
+      element.style.background = isCurrentUser ? "#fff3cd" : "#e9f2ff";
+      element.style.color = isCurrentUser ? "#7a4b00" : "#0b4fb3";
+    },
     provider: createRestMentionProvider({
       endpoint: "http://localhost:3001/api/mentions/users"
     }),
@@ -50,6 +61,11 @@ async function bootstrap(): Promise<void> {
   const refreshButton = document.getElementById("refresh-data");
   refreshButton?.addEventListener("click", () => {
     void renderRawData(editor);
+  });
+  currentUserSelect?.addEventListener("change", () => {
+    mentions.setMentionRenderContext({
+      currentUserDisplayName: currentUserSelect.value || undefined
+    });
   });
 
   await renderRawData(editor);
