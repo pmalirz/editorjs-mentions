@@ -12,6 +12,8 @@
     "build": "npm run build --workspaces",
     "dev:server": "npm run dev --workspace @editorjs-mentions/example-server",
     "dev:plugin": "npm run dev --workspace @editorjs-mentions/plugin",
-    "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo"
+    "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo",
+    "dev:ldap:up": "docker compose -f examples/server/docker-compose.ldap.yml up -d",
+    "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down"
   }
 }

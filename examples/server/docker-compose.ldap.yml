@@ -1,0 +1,42 @@
+services:
+  ldap:
+    image: osixia/openldap:1.5.0
+    container_name: editorjs-mentions-ldap
+    environment:
+      LDAP_ORGANISATION: "Example Local"
+      LDAP_DOMAIN: "example.local"
+      LDAP_ADMIN_PASSWORD: "admin"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_TLS: "false"
+    ports:
+      - "1389:389"
+    restart: unless-stopped
+
+  ldap-seed:
+    image: osixia/openldap:1.5.0
+    container_name: editorjs-mentions-ldap-seed
+    depends_on:
+      - ldap
+    volumes:
+      - ./ldap/seed:/seed:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >
+        sleep 6 &&
+        ldapadd -x -H ldap://ldap:389
+        -D "cn=admin,dc=example,dc=local"
+        -w admin
+        -f /seed/10-users.ldif || true
+    restart: "no"
+
+  phpldapadmin:
+    image: osixia/phpldapadmin:0.9.0
+    container_name: editorjs-mentions-phpldapadmin
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: ldap
+      PHPLDAPADMIN_HTTPS: "false"
+    ports:
+      - "8081:80"
+    depends_on:
+      - ldap
+    restart: unless-stopped

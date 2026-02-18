@@ -163,6 +163,13 @@ See `examples/server/.env.example` and set:
 
 When enabled, the server switches to LDAP-backed lookup.
 
+For quick local LDAP testing with Docker, see `examples/server/README.md`.
+
+Shortcuts:
+
+- `npm run dev:ldap:up`
+- `npm run dev:ldap:down`
+
 ## Release & Publish
 
 Before publishing `@editorjs-mentions/plugin`:

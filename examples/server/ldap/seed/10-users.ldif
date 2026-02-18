@@ -1,0 +1,45 @@
+dn: ou=users,dc=example,dc=local
+objectClass: organizationalUnit
+ou: users
+
+dn: uid=john.doe,ou=users,dc=example,dc=local
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John Doe
+sn: Doe
+givenName: John
+displayName: John Doe
+uid: john.doe
+mail: john.doe@example.local
+title: Engineering
+userPassword: test123
+
+dn: uid=joanna.smith,ou=users,dc=example,dc=local
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Joanna Smith
+sn: Smith
+givenName: Joanna
+displayName: Joanna Smith
+uid: joanna.smith
+mail: joanna.smith@example.local
+title: Product Management
+userPassword: test123
+
+dn: uid=raj.patel,ou=users,dc=example,dc=local
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Raj Patel
+sn: Patel
+givenName: Raj
+displayName: Raj Patel
+uid: raj.patel
+mail: raj.patel@example.local
+title: Platform Team
+userPassword: test123
