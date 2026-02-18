@@ -8,6 +8,8 @@ Mentions autocomplete plugin for Editor.js with:
 - mention tooltip with optional link
 - metadata-preserving copy/paste in Editor.js
 
+![Mentions autocomplete example](docs/mentions-example-autocomplete.png)
+
 ## Install
 
 ```bash

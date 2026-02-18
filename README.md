@@ -16,6 +16,8 @@
   - in-memory demo users
   - Active Directory-backed example provider
 
+![Mentions autocomplete example](docs/mentions-example-autocomplete.png)
+
 ## Monorepo Layout
 
 - `packages/editorjs-mentions`: plugin package (TypeScript)
