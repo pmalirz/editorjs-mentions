@@ -6,13 +6,13 @@
   "author": "editorjs-mentions contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/editorjs-mentions.git",
+    "url": "git+https://github.com/pmalirz/editorjs-mentions.git",
     "directory": "packages/editorjs-mentions"
   },
   "bugs": {
-    "url": "https://github.com/your-org/editorjs-mentions/issues"
+    "url": "https://github.com/pmalirz/editorjs-mentions/issues"
   },
-  "homepage": "https://github.com/your-org/editorjs-mentions#readme",
+  "homepage": "homepage": "https://github.com/pmalirz/editorjs-mentions#readme",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
