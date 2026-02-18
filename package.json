@@ -15,5 +15,9 @@
     "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo",
     "dev:ldap:up": "docker compose -f examples/server/docker-compose.ldap.yml up -d",
     "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmalirz/editorjs-mentions.git"
   }
 }
