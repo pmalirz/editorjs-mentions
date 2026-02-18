@@ -2,6 +2,17 @@
   "name": "@editorjs-mentions/plugin",
   "version": "0.1.0",
   "description": "Mentions autocomplete plugin for Editor.js",
+  "license": "MIT",
+  "author": "editorjs-mentions contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/editorjs-mentions.git",
+    "directory": "packages/editorjs-mentions"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/editorjs-mentions/issues"
+  },
+  "homepage": "https://github.com/your-org/editorjs-mentions#readme",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -13,17 +24,23 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs",
     "dev": "tsup src/index.ts --dts --format esm,cjs --watch",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm run build"
   },
   "keywords": [
     "editorjs",
     "mentions",
-    "autocomplete"
+    "autocomplete",
+    "plugin",
+    "editor.js"
   ],
   "peerDependencies": {
     "@editorjs/editorjs": "^2.0.0"

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "Editor.js mentions plugin + sample REST server",
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "examples/*"

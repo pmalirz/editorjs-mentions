@@ -45,7 +45,12 @@ npm run dev:demo
 
 ```ts
 import EditorJS from "@editorjs/editorjs";
-import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/plugin";
+import {
+  EditorJSMentions,
+  createRestMentionProvider,
+  encodeMentionsInOutput,
+  decodeMentionsInOutput
+} from "@editorjs-mentions/plugin";
 
 const editor = new EditorJS({
   holder: "editor"
@@ -56,18 +61,22 @@ await editor.isReady;
 const mentions = new EditorJSMentions({
   holder: "editor",
   triggerSymbols: ["@"],
-  mentionRenderContext: { currentUserDisplayName: "Joanna Smith" },
+  mentionRenderContext: { currentUserId: "u-1002" },
   renderMention: ({ item, defaultText, element, context }) => {
-    const ctx = context as { currentUserDisplayName?: string } | undefined;
+    const ctx = context as { currentUserId?: string } | undefined;
     element.textContent = defaultText;
-    element.style.fontWeight = ctx?.currentUserDisplayName === item.displayName ? "700" : "400";
+    element.style.fontWeight = ctx?.currentUserId === item.id ? "700" : "400";
   },
   provider: createRestMentionProvider({
     endpoint: "http://localhost:3001/api/mentions/users"
   })
 });
 
-mentions.setMentionRenderContext({ currentUserDisplayName: "John Doe" });
+mentions.setMentionRenderContext({ currentUserId: "u-1001" });
+
+const nativeOutput = await editor.save();
+const payloadForServer = encodeMentionsInOutput(nativeOutput);
+const payloadForEditor = decodeMentionsInOutput(payloadForServer);
 
 // later:
 // mentions.destroy();
@@ -151,3 +160,20 @@ See `examples/server/.env.example` and set:
 - `AD_BASE_DN`
 
 When enabled, the server switches to LDAP-backed lookup.
+
+## Release & Publish
+
+Before publishing `@editorjs-mentions/plugin`:
+
+1. Update plugin metadata URLs in `packages/editorjs-mentions/package.json`:
+   - `repository.url`
+   - `bugs.url`
+   - `homepage`
+2. Bump version in `packages/editorjs-mentions/package.json`.
+3. Build and typecheck:
+   - `npm run typecheck --workspace @editorjs-mentions/plugin`
+   - `npm run build --workspace @editorjs-mentions/plugin`
+4. Publish from package directory:
+   - `npm publish --access public --workspace @editorjs-mentions/plugin`
+
+License: MIT (`LICENSE`).

@@ -31,10 +31,10 @@ async function bootstrap(): Promise<void> {
     holder: "editor",
     triggerSymbols: ["@"],
     maxResults: 8,
-    mentionRenderContext: { currentUserDisplayName: currentUser },
+    mentionRenderContext: { currentUserId: currentUser },
     renderMention: ({ item, defaultText, element, context }) => {
-      const ctx = context as { currentUserDisplayName?: string } | undefined;
-      const isCurrentUser = !!ctx?.currentUserDisplayName && ctx.currentUserDisplayName === item.displayName;
+      const ctx = context as { currentUserId?: string } | undefined;
+      const isCurrentUser = !!ctx?.currentUserId && ctx.currentUserId === item.id;
       element.textContent = defaultText;
       element.style.fontWeight = isCurrentUser ? "700" : "400";
       element.style.background = isCurrentUser ? "#fff3cd" : "#e9f2ff";
@@ -64,7 +64,7 @@ async function bootstrap(): Promise<void> {
   });
   currentUserSelect?.addEventListener("change", () => {
     mentions.setMentionRenderContext({
-      currentUserDisplayName: currentUserSelect.value || undefined
+      currentUserId: currentUserSelect.value || undefined
     });
   });
 

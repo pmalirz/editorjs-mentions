@@ -1,6 +1,12 @@
 # @editorjs-mentions/plugin
 
-Mentions autocomplete plugin for Editor.js.
+Mentions autocomplete plugin for Editor.js with:
+
+- configurable trigger symbols
+- pluggable provider API
+- structured mention serialization (`text + entities`) for stable backend IDs
+- mention tooltip with optional link
+- metadata-preserving copy/paste in Editor.js
 
 ## Install
 
@@ -8,7 +14,7 @@ Mentions autocomplete plugin for Editor.js.
 npm i @editorjs-mentions/plugin
 ```
 
-## Usage
+## Quick Start
 
 ```ts
 import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/plugin";
@@ -16,10 +22,10 @@ import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/
 const mentions = new EditorJSMentions({
   holder: "editor",
   triggerSymbols: ["@"],
-  mentionRenderContext: { currentUserDisplayName: "Joanna Smith" },
+  mentionRenderContext: { currentUserId: "u-1002" },
   renderMention: ({ item, defaultText, element, context }) => {
-    const ctx = context as { currentUserDisplayName?: string } | undefined;
-    const isCurrentUser = ctx?.currentUserDisplayName === item.displayName;
+    const ctx = context as { currentUserId?: string } | undefined;
+    const isCurrentUser = ctx?.currentUserId === item.id;
     element.textContent = defaultText;
     element.style.fontWeight = isCurrentUser ? "700" : "400";
   },
@@ -28,8 +34,7 @@ const mentions = new EditorJSMentions({
   })
 });
 
-mentions.setMentionRenderContext({ currentUserDisplayName: "John Doe" });
-mentions.refreshMentionRendering();
+mentions.setMentionRenderContext({ currentUserId: "u-1001" });
 
 // mentions.destroy();
 ```
@@ -37,7 +42,7 @@ mentions.refreshMentionRendering();
 ## Config
 
 - `holder: string | HTMLElement` - Editor.js holder element or id.
-- `provider` - mention source function/object.
+- `provider` - mention source function/object (required).
 - `triggerSymbols?: string[]` - defaults to `["@"]`.
 - `maxResults?: number` - defaults to `8`.
 - `minChars?: number` - defaults to `0`.
@@ -45,10 +50,8 @@ mentions.refreshMentionRendering();
 - `className?: string` - custom dropdown class.
 - `onSelect?: (item) => void`.
 - `renderItem?: (item) => string` - custom item renderer.
-- `renderMention?: (args) => void` - customize rendered mention anchor per entity state.
+- `renderMention?: (args) => void` - customize rendered mention anchor (style/content/classes).
 - `mentionRenderContext?: unknown` - dynamic context available in `renderMention`.
-- Clicking a mention opens a small details tooltip (image, name, description, optional link).
-- Copy/cut/paste of mentions inside Editor.js preserves mention metadata (`id`, description, image, link).
 
 ## Data Model
 
@@ -62,20 +65,76 @@ type MentionItem = {
 };
 ```
 
-## Structured Save Format
+## Save/Load with Stable IDs
 
-To keep stable IDs in persisted payloads:
+Serialize editor output before sending to backend:
 
 ```ts
-import { encodeMentionsInOutput } from "@editorjs-mentions/plugin";
+import { encodeMentionsInOutput, decodeMentionsInOutput } from "@editorjs-mentions/plugin";
 
 const nativeOutput = await editor.save();
-const serverOutput = encodeMentionsInOutput(nativeOutput);
+const payloadForServer = encodeMentionsInOutput(nativeOutput);
+
+// later when loading existing content:
+const payloadFromServer = await fetch(...).then((r) => r.json());
+const payloadForEditor = decodeMentionsInOutput(payloadFromServer);
 ```
 
-Use `decodeMentionsInOutput(...)` to rebuild mention HTML when loading a stored payload with `entities`.
+Example stored paragraph:
+
+```json
+{
+  "type": "paragraph",
+  "data": {
+    "text": "@John Doe @Raj Patel",
+    "entities": [
+      {
+        "type": "mention",
+        "id": "u-1001",
+        "displayName": "John Doe",
+        "start": 0,
+        "end": 9,
+        "description": "Engineering",
+        "link": "https://example.local/users/u-1001"
+      }
+    ]
+  }
+}
+```
+
+## Runtime Styling Updates
+
+Use ID-based context and re-render mentions when app state changes:
+
+```ts
+mentions.setMentionRenderContext({ currentUserId: loggedUser.id });
+mentions.refreshMentionRendering();
+```
+
+`renderMention` receives:
+
+```ts
+{
+  item: MentionItem;              // full mention metadata (id, displayName, ...)
+  trigger: string;                // matched trigger, e.g. "@"
+  defaultText: string;            // default visible text, e.g. "@John Doe"
+  element: HTMLAnchorElement;     // mention DOM element to customize
+  source: "insert" | "paste" | "refresh";
+  context?: unknown;              // mentionRenderContext passed by app
+}
+```
 
 ## Clipboard Notes
 
 - In-editor copy/paste keeps mention structure via custom clipboard payload + HTML normalization.
 - Pasting into external apps falls back to plain text representation (for example `@John Doe`).
+
+## Public API
+
+- `new EditorJSMentions(config)`
+- `destroy()`
+- `setMentionRenderContext(context: unknown)`
+- `refreshMentionRendering()`
+- `createRestMentionProvider(options)`
+- `encodeMentionsInOutput(output)`
+- `decodeMentionsInOutput(output)`

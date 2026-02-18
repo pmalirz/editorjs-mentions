@@ -20,7 +20,7 @@ export type MentionProviderObject = {
 
 export type MentionProvider = MentionProviderFn | MentionProviderObject;
 
-export type MentionRenderSource = "insert" | "paste" | "hydrate" | "refresh";
+export type MentionRenderSource = "insert" | "paste" | "refresh";
 
 export type MentionRenderArgs = {
   item: MentionItem;
