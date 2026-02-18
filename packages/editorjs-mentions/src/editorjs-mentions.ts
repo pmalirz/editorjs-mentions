@@ -187,23 +187,31 @@ export class EditorJSMentions {
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dropdown.moveDown();
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dropdown.moveUp();
       return;
     }
 
     if (event.key === "Enter" || event.key === "Tab") {
       event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dropdown.chooseActive();
       return;
     }
 
     if (event.key === "Escape") {
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       this.dropdown.hide();
       this.activeContext = null;
     }
