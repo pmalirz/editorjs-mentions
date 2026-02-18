@@ -186,3 +186,12 @@ Before publishing `@editorjs-mentions/plugin`:
    - `npm publish --access public --workspace @editorjs-mentions/plugin`
 
 License: MIT (`LICENSE`).
+
+## GitHub Actions
+
+- CI build workflow: `.github/workflows/ci.yml`
+- npm publish workflow: `.github/workflows/publish-npm.yml`
+
+For npm publish workflow, configure repository secret:
+
+- `NPM_TOKEN` - npm automation token with publish permissions for `@editorjs-mentions/plugin`.
