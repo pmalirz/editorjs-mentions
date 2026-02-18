@@ -69,6 +69,9 @@ export class EditorJSMentions {
     this.holder.removeEventListener("input", this.onInput, true);
     this.holder.removeEventListener("keydown", this.onKeyDown, true);
     this.holder.removeEventListener("click", this.onClick, true);
+    this.holder.removeEventListener("copy", this.onCopy, true);
+    this.holder.removeEventListener("cut", this.onCut, true);
+    this.holder.removeEventListener("paste", this.onPaste, true);
     document.removeEventListener("mousedown", this.onDocumentMouseDown, true);
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -81,6 +84,9 @@ export class EditorJSMentions {
     this.holder.addEventListener("input", this.onInput, true);
     this.holder.addEventListener("keydown", this.onKeyDown, true);
     this.holder.addEventListener("click", this.onClick, true);
+    this.holder.addEventListener("copy", this.onCopy, true);
+    this.holder.addEventListener("cut", this.onCut, true);
+    this.holder.addEventListener("paste", this.onPaste, true);
     document.addEventListener("mousedown", this.onDocumentMouseDown, true);
   }
 
@@ -123,6 +129,57 @@ export class EditorJSMentions {
     this.evaluateAndFetch();
   };
 
+  private onCopy = (event: ClipboardEvent): void => {
+    this.handleCopyOrCut(event, false);
+  };
+
+  private onCut = (event: ClipboardEvent): void => {
+    this.handleCopyOrCut(event, true);
+  };
+
+  private onPaste = (event: ClipboardEvent): void => {
+    const data = event.clipboardData;
+    if (!data) {
+      return;
+    }
+
+    const customHtml = data.getData("application/x-editorjs-mentions");
+    const plainHtml = data.getData("text/html");
+    const candidateHtml = customHtml || plainHtml;
+    if (!candidateHtml || !candidateHtml.includes("editorjs-mention")) {
+      return;
+    }
+
+    const normalized = normalizeMentionAnchorsHtml(candidateHtml);
+    if (!normalized) {
+      return;
+    }
+
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();
+
+    const fragment = range.createContextualFragment(normalized);
+    const last = fragment.lastChild;
+    range.insertNode(fragment);
+
+    if (last) {
+      const caret = document.createRange();
+      caret.setStartAfter(last);
+      caret.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(caret);
+    }
+  };
+
   private onKeyDown = (event: KeyboardEvent): void => {
     if (!this.dropdown.isVisible()) {
       return;
@@ -151,6 +208,48 @@ export class EditorJSMentions {
       this.activeContext = null;
     }
   };
+
+  private handleCopyOrCut(event: ClipboardEvent, isCut: boolean): void {
+    const selection = window.getSelection();
+    const data = event.clipboardData;
+    if (!selection || !selection.rangeCount || !data || selection.isCollapsed) {
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const root = range.commonAncestorContainer;
+    if (!this.holder.contains(root.nodeType === Node.ELEMENT_NODE ? root : root.parentNode)) {
+      return;
+    }
+
+    const fragment = range.cloneContents();
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(fragment);
+    const html = wrapper.innerHTML;
+
+    if (!html.includes("editorjs-mention")) {
+      return;
+    }
+
+    const normalized = normalizeMentionAnchorsHtml(html);
+    const plain = selection.toString().replace(/\u00A0/g, " ");
+
+    data.setData("text/plain", plain);
+    data.setData("text/html", normalized);
+    data.setData("application/x-editorjs-mentions", normalized);
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+
+    if (isCut) {
+      range.deleteContents();
+      selection.removeAllRanges();
+      const caret = document.createRange();
+      caret.setStart(range.startContainer, range.startOffset);
+      caret.collapse(true);
+      selection.addRange(caret);
+    }
+  }
 
   private evaluateAndFetch(): void {
     this.activeContext = this.readActiveContext();
@@ -395,4 +494,77 @@ function escapeHtml(input: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function normalizeMentionAnchorsHtml(html: string): string {
+  const root = document.createElement("div");
+  root.innerHTML = html;
+
+  const mentions = Array.from(root.querySelectorAll("a.editorjs-mention, span.editorjs-mention"));
+  for (const mention of mentions) {
+    const el = mention as HTMLElement;
+    const text = (el.textContent || "").replace(/\u00A0/g, " ");
+    const id = el.dataset.mentionId || mentionIdFromHref((el as HTMLAnchorElement).getAttribute("href")) || text;
+    const displayName = el.dataset.mentionDisplayName || text.replace(/^@/, "");
+    const trigger = el.dataset.mentionTrigger || (text.startsWith("@") ? "@" : "@");
+    const payload = safeMentionPayload(el);
+
+    const anchor = document.createElement("a");
+    anchor.className = "editorjs-mention";
+    anchor.contentEditable = "false";
+    anchor.href = `mention://${encodeURIComponent(id)}`;
+    anchor.dataset.mentionId = id;
+    anchor.dataset.mentionDisplayName = displayName;
+    anchor.dataset.mentionTrigger = trigger;
+    anchor.dataset.mentionDescription = payload.description || "";
+    anchor.dataset.mentionImage = payload.image || "";
+    anchor.dataset.mentionLink = payload.link || "";
+    anchor.dataset.mentionPayload = encodeURIComponent(
+      JSON.stringify({
+        id,
+        displayName,
+        description: payload.description,
+        image: payload.image,
+        link: payload.link
+      })
+    );
+    anchor.textContent = text || `${trigger}${displayName}`;
+
+    el.replaceWith(anchor);
+  }
+
+  return root.innerHTML;
+}
+
+function safeMentionPayload(el: HTMLElement): {
+  description?: string;
+  image?: string;
+  link?: string;
+} {
+  const encoded = el.dataset.mentionPayload;
+  if (encoded) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(encoded)) as {
+        description?: string;
+        image?: string;
+        link?: string;
+      };
+      return parsed || {};
+    } catch {
+      // noop
+    }
+  }
+
+  return {
+    description: el.dataset.mentionDescription || undefined,
+    image: el.dataset.mentionImage || undefined,
+    link: el.dataset.mentionLink || undefined
+  };
+}
+
+function mentionIdFromHref(href: string | null): string | undefined {
+  if (!href || !href.startsWith("mention://")) {
+    return undefined;
+  }
+  return decodeURIComponent(href.slice("mention://".length));
 }

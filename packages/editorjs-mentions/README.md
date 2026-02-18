@@ -36,6 +36,7 @@ const mentions = new EditorJSMentions({
 - `onSelect?: (item) => void`.
 - `renderItem?: (item) => string` - custom item renderer.
 - Clicking a mention opens a small details tooltip (image, name, description, optional link).
+- Copy/cut/paste of mentions inside Editor.js preserves mention metadata (`id`, description, image, link).
 
 ## Data Model
 
@@ -61,3 +62,8 @@ const serverOutput = encodeMentionsInOutput(nativeOutput);
 ```
 
 Use `decodeMentionsInOutput(...)` to rebuild mention HTML when loading a stored payload with `entities`.
+
+## Clipboard Notes
+
+- In-editor copy/paste keeps mention structure via custom clipboard payload + HTML normalization.
+- Pasting into external apps falls back to plain text representation (for example `@John Doe`).
