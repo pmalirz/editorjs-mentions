@@ -20,6 +20,10 @@
     "@types/node": "^20.12.7",
     "tsx": "^4.7.2",
     "typescript": "^5.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmalirz/editorjs-mentions.git"
   }
 }
 
