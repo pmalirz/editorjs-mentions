@@ -2,6 +2,8 @@
 
 `editorjs-mentions` is an Editor.js plugin that enables mention-style autocomplete (similar to JIRA/Confluence).
 
+![Mentions usage demo](docs/mentions-usage-example.gif)
+
 ## Features
 
 - Trigger autocomplete with `@` (or custom trigger symbols).
@@ -15,8 +17,6 @@
 - Sample REST server with:
   - in-memory demo users
   - Active Directory-backed example provider
-
-![Mentions autocomplete example](docs/mentions-example-autocomplete.png)
 
 ## Monorepo Layout
 
