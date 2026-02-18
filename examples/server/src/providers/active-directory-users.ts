@@ -37,11 +37,13 @@ export class ActiveDirectoryUsersSource implements MentionSource {
 
       return result.searchEntries.slice(0, query.limit).map((entry: Record<string, unknown>) => {
         const displayName = stringValue(entry.displayName) || stringValue(entry.cn) || "Unknown";
-        const description = stringValue(entry.title) || stringValue(entry.mail);
+        const email = stringValue(entry.mail);
+        const description = stringValue(entry.title) || email;
         return {
           id: guidOrFallback(entry.objectGUID, displayName),
           displayName,
-          description
+          description,
+          link: email ? `mailto:${email}` : undefined
         };
       });
     } finally {

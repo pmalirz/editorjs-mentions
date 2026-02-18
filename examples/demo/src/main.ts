@@ -1,5 +1,10 @@
 import EditorJS from "@editorjs/editorjs";
-import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/plugin";
+import {
+  EditorJSMentions,
+  createRestMentionProvider,
+  encodeMentionsInOutput,
+  type EditorJSOutputLike
+} from "@editorjs-mentions/plugin";
 import "./styles.css";
 
 async function bootstrap(): Promise<void> {
@@ -68,8 +73,9 @@ async function renderRawData(editor: EditorJS): Promise<void> {
   }
 
   try {
-    const data = await editor.save();
-    output.textContent = JSON.stringify(data, null, 2);
+    const data = (await editor.save()) as EditorJSOutputLike;
+    const normalized = encodeMentionsInOutput(data);
+    output.textContent = JSON.stringify(normalized, null, 2);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     output.textContent = `Failed to read editor data: ${message}`;

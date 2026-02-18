@@ -3,6 +3,7 @@ export type MentionItem = {
   displayName: string;
   description?: string;
   image?: string;
+  link?: string;
 };
 
 export type MentionQuery = {
@@ -31,3 +32,26 @@ export type MentionsConfig = {
   renderItem?: (item: MentionItem) => string;
 };
 
+export type MentionEntity = {
+  type: "mention";
+  id: string;
+  displayName: string;
+  start: number;
+  end: number;
+  trigger?: string;
+  description?: string;
+  image?: string;
+  link?: string;
+};
+
+export type EditorJSBlockLike = {
+  id?: string;
+  type: string;
+  data: Record<string, unknown>;
+};
+
+export type EditorJSOutputLike = {
+  time?: number;
+  version?: string;
+  blocks: EditorJSBlockLike[];
+};

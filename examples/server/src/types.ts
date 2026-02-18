@@ -3,6 +3,7 @@ export type MentionItem = {
   displayName: string;
   description?: string;
   image?: string;
+  link?: string;
 };
 
 export type MentionQuery = {
@@ -14,4 +15,3 @@ export type MentionQuery = {
 export interface MentionSource {
   search(query: MentionQuery): Promise<MentionItem[]>;
 }
-

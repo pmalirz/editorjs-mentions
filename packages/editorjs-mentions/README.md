@@ -35,6 +35,7 @@ const mentions = new EditorJSMentions({
 - `className?: string` - custom dropdown class.
 - `onSelect?: (item) => void`.
 - `renderItem?: (item) => string` - custom item renderer.
+- Clicking a mention opens a small details tooltip (image, name, description, optional link).
 
 ## Data Model
 
@@ -44,6 +45,19 @@ type MentionItem = {
   displayName: string;
   description?: string;
   image?: string;
+  link?: string;
 };
 ```
 
+## Structured Save Format
+
+To keep stable IDs in persisted payloads:
+
+```ts
+import { encodeMentionsInOutput } from "@editorjs-mentions/plugin";
+
+const nativeOutput = await editor.save();
+const serverOutput = encodeMentionsInOutput(nativeOutput);
+```
+
+Use `decodeMentionsInOutput(...)` to rebuild mention HTML when loading a stored payload with `entities`.

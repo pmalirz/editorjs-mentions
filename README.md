@@ -11,6 +11,7 @@
   - `displayName: string`
   - `description?: string`
   - `image?: string`
+  - `link?: string`
 - Sample REST server with:
   - in-memory demo users
   - Active Directory-backed example provider
@@ -74,7 +75,24 @@ type MentionItem = {
   displayName: string;
   description?: string;
   image?: string;
+  link?: string;
 };
+```
+
+## Persisting Mention IDs
+
+Use `encodeMentionsInOutput(editor.save())` to convert display HTML into structured entities:
+
+```json
+{
+  "type": "paragraph",
+  "data": {
+    "text": "@John Doe @Raj Patel",
+    "entities": [
+      { "type": "mention", "id": "u-1001", "displayName": "John Doe", "start": 0, "end": 9 }
+    ]
+  }
+}
 ```
 
 Providers implement:

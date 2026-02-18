@@ -7,6 +7,8 @@ const CSS = `
   border-radius: 4px;
   padding: 0 4px;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .editorjs-mentions-dropdown {
@@ -63,6 +65,60 @@ const CSS = `
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.editorjs-mention-tooltip {
+  position: fixed;
+  z-index: 10000;
+  min-width: 220px;
+  max-width: 320px;
+  background: #fff;
+  border: 1px solid #d7dde5;
+  border-radius: 10px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
+.editorjs-mention-tooltip-inner {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  padding: 10px;
+  align-items: start;
+}
+
+.editorjs-mention-tooltip-image,
+.editorjs-mention-tooltip-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.editorjs-mention-tooltip-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d5def0;
+  color: #334155;
+  font-weight: 600;
+}
+
+.editorjs-mention-tooltip-name {
+  font-size: 14px;
+  line-height: 1.2;
+  color: #1f2937;
+}
+
+.editorjs-mention-tooltip-description {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.editorjs-mention-tooltip-link {
+  margin-top: 7px;
+  display: inline-block;
+  font-size: 12px;
+  color: #0b4fb3;
+}
 `;
 
 export function ensureMentionsStyleInjected(): void {
@@ -79,4 +135,3 @@ export function ensureMentionsStyleInjected(): void {
   style.textContent = CSS;
   document.head.appendChild(style);
 }
-

@@ -23,6 +23,7 @@ export class EditorJSMentions {
   private requestSerial = 0;
   private activeContext: ActiveContext | null = null;
   private destroyed = false;
+  private tooltipRoot: HTMLDivElement;
 
   constructor(config: MentionsConfig) {
     this.holder =
@@ -52,6 +53,10 @@ export class EditorJSMentions {
       renderItem: this.config.renderItem,
       onSelect: (item) => this.selectMention(item)
     });
+    this.tooltipRoot = document.createElement("div");
+    this.tooltipRoot.className = "editorjs-mention-tooltip";
+    this.tooltipRoot.style.display = "none";
+    document.body.appendChild(this.tooltipRoot);
 
     this.bind();
   }
@@ -64,23 +69,54 @@ export class EditorJSMentions {
     this.holder.removeEventListener("input", this.onInput, true);
     this.holder.removeEventListener("keydown", this.onKeyDown, true);
     this.holder.removeEventListener("click", this.onClick, true);
+    document.removeEventListener("mousedown", this.onDocumentMouseDown, true);
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
     this.dropdown.destroy();
+    this.tooltipRoot.remove();
   }
 
   private bind(): void {
     this.holder.addEventListener("input", this.onInput, true);
     this.holder.addEventListener("keydown", this.onKeyDown, true);
     this.holder.addEventListener("click", this.onClick, true);
+    document.addEventListener("mousedown", this.onDocumentMouseDown, true);
   }
 
-  private onClick = (): void => {
+  private onClick = (event: MouseEvent): void => {
+    const target = event.target instanceof HTMLElement ? event.target : null;
+    const mentionNode = target?.closest("a.editorjs-mention") as HTMLAnchorElement | null;
+    if (mentionNode) {
+      event.preventDefault();
+      const item = this.readMentionFromElement(mentionNode);
+      if (item) {
+        this.showTooltip(mentionNode, item);
+      }
+      return;
+    }
+
+    this.hideTooltip();
+
     if (!this.dropdown.isVisible()) {
       return;
     }
     this.evaluateAndFetch();
+  };
+
+  private onDocumentMouseDown = (event: MouseEvent): void => {
+    if (!this.tooltipRoot || this.tooltipRoot.style.display === "none") {
+      return;
+    }
+    const target = event.target as Node | null;
+    if (!target) {
+      return;
+    }
+    const clickedMention = target instanceof HTMLElement ? target.closest("a.editorjs-mention") : null;
+    if (clickedMention || this.tooltipRoot.contains(target)) {
+      return;
+    }
+    this.hideTooltip();
   };
 
   private onInput = (): void => {
@@ -230,18 +266,31 @@ export class EditorJSMentions {
     range.setEnd(context.textNode, context.endOffset);
     range.deleteContents();
 
-    const mention = document.createElement("span");
-    mention.className = "editorjs-mention";
-    mention.contentEditable = "false";
-    mention.dataset.mentionId = item.id;
-    mention.dataset.mentionDisplayName = item.displayName;
-    mention.dataset.mentionTrigger = context.trigger;
-    mention.textContent = `${context.trigger}${item.displayName}`;
+    const anchor = document.createElement("a");
+    anchor.className = "editorjs-mention";
+    anchor.contentEditable = "false";
+    anchor.href = `mention://${encodeURIComponent(item.id)}`;
+    anchor.dataset.mentionPayload = encodeURIComponent(
+      JSON.stringify({
+        id: item.id,
+        displayName: item.displayName,
+        description: item.description,
+        image: item.image,
+        link: item.link
+      })
+    );
+    anchor.dataset.mentionLink = item.link || "";
+    anchor.dataset.mentionDescription = item.description || "";
+    anchor.dataset.mentionImage = item.image || "";
+    anchor.dataset.mentionId = item.id;
+    anchor.dataset.mentionDisplayName = item.displayName;
+    anchor.dataset.mentionTrigger = context.trigger;
+    anchor.textContent = `${context.trigger}${item.displayName}`;
 
     const trailingSpace = document.createTextNode("\u00A0");
 
     range.insertNode(trailingSpace);
-    range.insertNode(mention);
+    range.insertNode(anchor);
 
     const selection = window.getSelection();
     if (selection) {
@@ -253,8 +302,67 @@ export class EditorJSMentions {
     }
 
     this.dropdown.hide();
+    this.hideTooltip();
     this.activeContext = null;
     this.config.onSelect?.(item);
+  }
+
+  private showTooltip(anchor: HTMLAnchorElement, item: MentionItem): void {
+    const rect = anchor.getBoundingClientRect();
+    const linkHtml = item.link
+      ? `<a class="editorjs-mention-tooltip-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">Open details</a>`
+      : "";
+    const imageHtml = item.image
+      ? `<img class="editorjs-mention-tooltip-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.displayName)}" />`
+      : `<div class="editorjs-mention-tooltip-placeholder">${escapeHtml(item.displayName.slice(0, 1).toUpperCase())}</div>`;
+
+    this.tooltipRoot.innerHTML = `
+      <div class="editorjs-mention-tooltip-inner">
+        ${imageHtml}
+        <div class="editorjs-mention-tooltip-main">
+          <div class="editorjs-mention-tooltip-name">${escapeHtml(item.displayName)}</div>
+          ${item.description ? `<div class="editorjs-mention-tooltip-description">${escapeHtml(item.description)}</div>` : ""}
+          ${linkHtml}
+        </div>
+      </div>
+    `;
+
+    this.tooltipRoot.style.display = "block";
+    this.tooltipRoot.style.left = `${Math.max(8, rect.left)}px`;
+    this.tooltipRoot.style.top = `${Math.max(8, rect.bottom + 6)}px`;
+  }
+
+  private hideTooltip(): void {
+    this.tooltipRoot.style.display = "none";
+    this.tooltipRoot.innerHTML = "";
+  }
+
+  private readMentionFromElement(anchor: HTMLAnchorElement): MentionItem | null {
+    const payload = anchor.dataset.mentionPayload;
+    if (payload) {
+      try {
+        const json = JSON.parse(decodeURIComponent(payload)) as MentionItem;
+        if (json && typeof json.id === "string" && typeof json.displayName === "string") {
+          return json;
+        }
+      } catch {
+        // noop
+      }
+    }
+
+    const id = anchor.dataset.mentionId;
+    const displayName = anchor.dataset.mentionDisplayName || anchor.textContent?.replace(/^@/, "");
+    if (!id || !displayName) {
+      return null;
+    }
+
+    return {
+      id,
+      displayName,
+      description: anchor.dataset.mentionDescription || undefined,
+      image: anchor.dataset.mentionImage || undefined,
+      link: anchor.dataset.mentionLink || undefined
+    };
   }
 
   private getCaretRect(): DOMRect | null {
@@ -280,3 +388,11 @@ export class EditorJSMentions {
   }
 }
 
+function escapeHtml(input: string): string {
+  return input
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
