@@ -32,8 +32,18 @@ jobs:
       - name: Build plugin
         run: npm run build --workspace @editorjs-mentions/plugin
 
+      - name: Validate publish metadata
+        run: |
+          echo "repository.url from package.json:"
+          npm pkg get repository.url --workspace @editorjs-mentions/plugin
+          EXPECTED="https://github.com/pmalirz/editorjs-mentions"
+          ACTUAL=$(node -p "require('./packages/editorjs-mentions/package.json').repository.url")
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "Invalid repository.url: $ACTUAL (expected: $EXPECTED)"
+            exit 1
+          fi
+
       - name: Publish plugin to npm
         run: npm publish --access public --provenance --workspace @editorjs-mentions/plugin
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
