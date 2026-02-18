@@ -1,14 +1,39 @@
-# Example LDAP Setup (Docker)
+# Example Server Modes
 
-This folder includes a local LDAP stack for testing the AD/LDAP mention provider.
+The sample mentions REST server supports two modes:
 
-## Start LDAP
+- Default: in-memory users (`AD_ENABLED=false`)
+- Optional: LDAP/AD-backed users (`AD_ENABLED=true`)
+
+## Default Mode (In-Memory)
+
+By default, server uses fixed in-memory example users from:
+
+- `examples/server/src/providers/in-memory-users.ts`
+
+Run:
+
+```bash
+npm run dev:server
+```
+
+If `examples/server/.env` does not enable LDAP (`AD_ENABLED=false`), endpoint:
+
+`GET http://localhost:3001/api/mentions/users?query=jo&trigger=@&limit=8`
+
+returns static demo users.
+
+## LDAP Mode (Optional)
+
+This folder includes a local LDAP stack for testing AD/LDAP provider.
+
+### Start LDAP
 
 ```bash
 docker compose -f examples/server/docker-compose.ldap.yml up -d
 ```
 
-Services:
+LDAP services:
 
 - LDAP: `ldap://localhost:1389`
 - LDAP seed job: `ldap-seed` (loads `examples/server/ldap/seed/10-users.ldif`)
@@ -19,7 +44,7 @@ phpLDAPadmin login:
 - Login DN: `cn=admin,dc=example,dc=local`
 - Password: `admin`
 
-## Configure mention server to use LDAP
+### Configure mention server to use LDAP
 
 1. Copy env:
 
@@ -39,7 +64,7 @@ npm run dev:server
 
 Expected matches include `John Doe` and `Joanna Smith`.
 
-## Seeded LDAP users
+### Seeded LDAP users
 
 Seed data is in `examples/server/ldap/seed/10-users.ldif`.
 
@@ -49,7 +74,7 @@ Seed data is in `examples/server/ldap/seed/10-users.ldif`.
 
 Note: seed file is mounted read-only and should not be removed by container startup.
 
-## Stop LDAP
+### Stop LDAP
 
 ```bash
 docker compose -f examples/server/docker-compose.ldap.yml down
