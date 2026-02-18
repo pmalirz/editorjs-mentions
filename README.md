@@ -1,10 +1,10 @@
 # editorjs-mentions
 
-[![Last Commit](https://img.shields.io/github/last-commit/your-org/editorjs-mentions?style=flat-square)](https://github.com/your-org/editorjs-mentions)
+[![Last Commit](https://img.shields.io/github/last-commit/pmalirz/editorjs-mentions?style=flat-square)](https://github.com/pmalirz/editorjs-mentions)
 [![npm latest](https://img.shields.io/npm/v/%40editorjs-mentions%2Fplugin/latest?style=flat-square)](https://www.npmjs.com/package/@editorjs-mentions/plugin)
 [![npm next](https://img.shields.io/npm/v/%40editorjs-mentions%2Fplugin/next?style=flat-square)](https://www.npmjs.com/package/@editorjs-mentions/plugin)
-[![License](https://img.shields.io/github/license/your-org/editorjs-mentions?style=flat-square)](https://github.com/your-org/editorjs-mentions/blob/main/LICENSE)
-[![Open Issues](https://img.shields.io/github/issues/your-org/editorjs-mentions?style=flat-square)](https://github.com/your-org/editorjs-mentions/issues)
+[![License](https://img.shields.io/github/license/pmalirz/editorjs-mentions?style=flat-square)](https://github.com/pmalirz/editorjs-mentions/blob/main/LICENSE)
+[![Open Issues](https://img.shields.io/github/issues/pmalirz/editorjs-mentions?style=flat-square)](https://github.com/pmalirz/editorjs-mentions/issues)
 [![Editor.js 2.x](https://img.shields.io/badge/Editor.js-2.x-0ea5e9?style=flat-square)](https://www.npmjs.com/package/@editorjs/editorjs)
 
 `editorjs-mentions` is an Editor.js plugin that enables mention-style autocomplete (similar to JIRA/Confluence).
