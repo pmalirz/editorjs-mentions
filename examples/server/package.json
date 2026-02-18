@@ -1,6 +1,6 @@
 {
   "name": "@editorjs-mentions/example-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Sample REST server for editorjs-mentions",
   "scripts": {
