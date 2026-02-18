@@ -1,13 +1,17 @@
 const MENTIONS_STYLE_ID = "editorjs-mentions-style";
 
 const CSS = `
+a.editorjs-mention,
+a.editorjs-mention:visited,
+a.editorjs-mention:hover,
+a.editorjs-mention:active,
 .editorjs-mention {
   background: #e9f2ff;
   color: #0b4fb3;
   border-radius: 4px;
   padding: 0 4px;
   white-space: nowrap;
-  text-decoration: none;
+  text-decoration: none !important;
   cursor: pointer;
 }
 
