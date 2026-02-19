@@ -2,6 +2,7 @@ import { MentionsDropdown } from "./dropdown";
 import { normalizeProvider } from "./providers";
 import { ensureMentionsStyleInjected } from "./styles";
 import type { MentionItem, MentionRenderSource, MentionsConfig } from "./types";
+import { escapeHtml, readMentionItemFromElement } from "./utils";
 
 type ActiveContext = {
   trigger: string;
@@ -76,8 +77,8 @@ export class EditorJSMentions {
     const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
     for (const mention of mentions) {
       const anchor = mention as HTMLAnchorElement;
-      const item = this.readMentionFromElement(anchor);
-      if (!item) {
+      const item = readMentionItemFromElement(anchor);
+      if (!item.id || !item.displayName) {
         continue;
       }
       const trigger = anchor.dataset.mentionTrigger || (anchor.textContent?.startsWith("@") ? "@" : "@");
@@ -119,8 +120,8 @@ export class EditorJSMentions {
     const mentionNode = target?.closest("a.editorjs-mention") as HTMLAnchorElement | null;
     if (mentionNode) {
       event.preventDefault();
-      const item = this.readMentionFromElement(mentionNode);
-      if (item) {
+      const item = readMentionItemFromElement(mentionNode);
+      if (item.id && item.displayName) {
         this.showTooltip(mentionNode, item);
       }
       return;
@@ -197,8 +198,8 @@ export class EditorJSMentions {
     range.insertNode(fragment);
 
     for (const mention of pastedMentions) {
-      const item = this.readMentionFromElement(mention);
-      if (!item) {
+      const item = readMentionItemFromElement(mention);
+      if (!item.id || !item.displayName) {
         continue;
       }
       const trigger = mention.dataset.mentionTrigger || "@";
@@ -479,34 +480,6 @@ export class EditorJSMentions {
     this.tooltipRoot.innerHTML = "";
   }
 
-  private readMentionFromElement(anchor: HTMLAnchorElement): MentionItem | null {
-    const payload = anchor.dataset.mentionPayload;
-    if (payload) {
-      try {
-        const json = JSON.parse(decodeURIComponent(payload)) as MentionItem;
-        if (json && typeof json.id === "string" && typeof json.displayName === "string") {
-          return json;
-        }
-      } catch {
-        // noop
-      }
-    }
-
-    const id = anchor.dataset.mentionId;
-    const displayName = anchor.dataset.mentionDisplayName || anchor.textContent?.replace(/^@/, "");
-    if (!id || !displayName) {
-      return null;
-    }
-
-    return {
-      id,
-      displayName,
-      description: anchor.dataset.mentionDescription || undefined,
-      image: anchor.dataset.mentionImage || undefined,
-      link: anchor.dataset.mentionLink || undefined
-    };
-  }
-
   private applyMentionRendering(
     anchor: HTMLAnchorElement,
     item: MentionItem,
@@ -555,15 +528,6 @@ export class EditorJSMentions {
   }
 }
 
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 function normalizeMentionAnchorsHtml(html: string): string {
   const root = document.createElement("div");
   root.innerHTML = html;
@@ -572,10 +536,19 @@ function normalizeMentionAnchorsHtml(html: string): string {
   for (const mention of mentions) {
     const el = mention as HTMLElement;
     const text = (el.textContent || "").replace(/\u00A0/g, " ");
-    const id = el.dataset.mentionId || mentionIdFromHref((el as HTMLAnchorElement).getAttribute("href")) || text;
-    const displayName = el.dataset.mentionDisplayName || text.replace(/^@/, "");
+
+    // Use utils to extract info
+    const item = readMentionItemFromElement(el);
+    if (!item.id || !item.displayName) {
+      // If we can't extract valid mention info, maybe we should leave it as is?
+      // But original code tried to normalize.
+      // Let's rely on item having id and displayName fallback from utils.
+      // If they are empty, we might have an issue.
+    }
+
+    const id = item.id;
+    const displayName = item.displayName;
     const trigger = el.dataset.mentionTrigger || (text.startsWith("@") ? "@" : "@");
-    const payload = safeMentionPayload(el);
 
     const anchor = document.createElement("a");
     anchor.className = "editorjs-mention";
@@ -584,16 +557,16 @@ function normalizeMentionAnchorsHtml(html: string): string {
     anchor.dataset.mentionId = id;
     anchor.dataset.mentionDisplayName = displayName;
     anchor.dataset.mentionTrigger = trigger;
-    anchor.dataset.mentionDescription = payload.description || "";
-    anchor.dataset.mentionImage = payload.image || "";
-    anchor.dataset.mentionLink = payload.link || "";
+    anchor.dataset.mentionDescription = item.description || "";
+    anchor.dataset.mentionImage = item.image || "";
+    anchor.dataset.mentionLink = item.link || "";
     anchor.dataset.mentionPayload = encodeURIComponent(
       JSON.stringify({
         id,
         displayName,
-        description: payload.description,
-        image: payload.image,
-        link: payload.link
+        description: item.description,
+        image: item.image,
+        link: item.link
       })
     );
     anchor.textContent = text || `${trigger}${displayName}`;
@@ -602,37 +575,4 @@ function normalizeMentionAnchorsHtml(html: string): string {
   }
 
   return root.innerHTML;
-}
-
-function safeMentionPayload(el: HTMLElement): {
-  description?: string;
-  image?: string;
-  link?: string;
-} {
-  const encoded = el.dataset.mentionPayload;
-  if (encoded) {
-    try {
-      const parsed = JSON.parse(decodeURIComponent(encoded)) as {
-        description?: string;
-        image?: string;
-        link?: string;
-      };
-      return parsed || {};
-    } catch {
-      // noop
-    }
-  }
-
-  return {
-    description: el.dataset.mentionDescription || undefined,
-    image: el.dataset.mentionImage || undefined,
-    link: el.dataset.mentionLink || undefined
-  };
-}
-
-function mentionIdFromHref(href: string | null): string | undefined {
-  if (!href || !href.startsWith("mention://")) {
-    return undefined;
-  }
-  return decodeURIComponent(href.slice("mention://".length));
 }

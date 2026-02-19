@@ -1,12 +1,5 @@
 import type { EditorJSOutputLike, MentionEntity } from "./types";
-
-type MentionPayload = {
-  id: string;
-  displayName: string;
-  description?: string;
-  image?: string;
-  link?: string;
-};
+import { escapeHtml, mentionIdFromHref, readMentionItemFromElement } from "./utils";
 
 export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
@@ -65,23 +58,24 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
 
     const el = node as HTMLElement;
     const isMention =
-      (el.tagName === "A" && (el.classList.contains("editorjs-mention") || mentionIdFromHref(el.getAttribute("href")))) ||
+      (el.tagName === "A" &&
+        (el.classList.contains("editorjs-mention") || !!mentionIdFromHref(el.getAttribute("href")))) ||
       !!el.dataset.mentionId;
 
     if (isMention) {
       const mentionText = (el.textContent || "").replace(/\u00A0/g, " ");
-      const payload = readMentionPayload(el);
-      const id = payload.id || el.dataset.mentionId || mentionIdFromHref(el.getAttribute("href")) || mentionText;
+      const item = readMentionItemFromElement(el);
+      const id = item.id || mentionText;
       const start = text.length;
       text += mentionText;
       const end = text.length;
       entities.push({
         type: "mention",
         id,
-        displayName: payload.displayName || el.dataset.mentionDisplayName || mentionText.replace(/^@/, ""),
-        description: payload.description || undefined,
-        image: payload.image || undefined,
-        link: payload.link || undefined,
+        displayName: item.displayName || mentionText.replace(/^@/, ""),
+        description: item.description,
+        image: item.image,
+        link: item.link,
         trigger: el.dataset.mentionTrigger || (mentionText.startsWith("@") ? "@" : undefined),
         start,
         end
@@ -119,7 +113,7 @@ export function decodeMentionsToHtml(text: string, entities: MentionEntity[]): s
   }
 
   html += escapeHtml(text.slice(cursor));
-  return html.replace(/  /g, " &nbsp;");
+  return html.replace(/ {2}/g, " &nbsp;");
 }
 
 function renderMentionAnchor(displayText: string, entity: MentionEntity): string {
@@ -142,30 +136,6 @@ function renderMentionAnchor(displayText: string, entity: MentionEntity): string
   )}" data-mention-payload="${escapeAttr(payload)}">${escapeHtml(visible)}</a>`;
 }
 
-function readMentionPayload(el: HTMLElement): MentionPayload {
-  const raw = el.dataset.mentionPayload;
-  if (!raw) {
-    return { id: "", displayName: "" };
-  }
-
-  try {
-    const decoded = JSON.parse(decodeURIComponent(raw)) as MentionPayload;
-    return decoded || { id: "", displayName: "" };
-  } catch {
-    return { id: "", displayName: "" };
-  }
-}
-
-function mentionIdFromHref(href: string | null): string | undefined {
-  if (!href) {
-    return undefined;
-  }
-  if (!href.startsWith("mention://")) {
-    return undefined;
-  }
-  return decodeURIComponent(href.slice("mention://".length));
-}
-
 function isMentionEntity(value: unknown): value is MentionEntity {
   if (!value || typeof value !== "object") {
     return false;
@@ -178,15 +148,6 @@ function isMentionEntity(value: unknown): value is MentionEntity {
     typeof item.start === "number" &&
     typeof item.end === "number"
   );
-}
-
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function escapeAttr(input: string): string {

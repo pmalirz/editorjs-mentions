@@ -6,175 +6,47 @@
 [![Open Issues](https://img.shields.io/github/issues/pmalirz/editorjs-mentions?style=flat-square)](https://github.com/pmalirz/editorjs-mentions/issues)
 [![Editor.js 2.x](https://img.shields.io/badge/Editor.js-2.x-0ea5e9?style=flat-square)](https://www.npmjs.com/package/@editorjs/editorjs)
 
-`editorjs-mentions` is an Editor.js plugin that enables mention-style autocomplete (similar to JIRA/Confluence).
+`editorjs-mentions` is a monorepo containing an Editor.js plugin that enables mention-style autocomplete (similar to JIRA/Confluence) and example applications.
 
 ![Mentions usage demo](docs/mentions-usage-example.gif)
 
-## Features
+## Packages
 
-- Trigger autocomplete with `@` (or custom trigger symbols).
-- Pluggable provider API for mention data.
-- Standard mention model:
-  - `id: string`
-  - `displayName: string`
-  - `description?: string`
-  - `image?: string`
-  - `link?: string`
-- Sample REST server with:
-  - in-memory demo users
-  - Active Directory-backed example provider
+-   **Plugin**: [`packages/editorjs-mentions`](./packages/editorjs-mentions) - The main plugin package.
+-   **Server Example**: [`examples/server`](./examples/server) - Sample REST backend (Express + TypeScript).
+-   **Demo**: [`examples/demo`](./examples/demo) - Minimal integration example.
 
-## Monorepo Layout
+## Getting Started
 
-- `packages/editorjs-mentions`: plugin package (TypeScript)
-- `examples/server`: sample REST backend (Express + TypeScript)
-- `examples/demo`: minimal integration example
+To start developing or running examples:
 
-## Quick Start
+1.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
 
-```bash
-npm install
-npm run build
-```
+2.  **Build packages**:
+    ```bash
+    npm run build
+    ```
 
-Run sample server:
+3.  **Run Sample Server**:
+    ```bash
+    npm run dev:server
+    ```
 
-```bash
-npm run dev:server
-```
+4.  **Run Demo App**:
+    ```bash
+    npm run dev:demo
+    ```
 
-Run demo app:
+## Plugin Documentation
 
-```bash
-npm run dev:demo
-```
+For detailed installation and usage instructions of the plugin, please refer to the [Plugin README](./packages/editorjs-mentions/README.md).
 
-## Plugin Usage
+## Contributing
 
-```ts
-import EditorJS from "@editorjs/editorjs";
-import {
-  EditorJSMentions,
-  createRestMentionProvider,
-  encodeMentionsInOutput,
-  decodeMentionsInOutput
-} from "@editorjs-mentions/plugin";
-
-const editor = new EditorJS({
-  holder: "editor"
-});
-
-await editor.isReady;
-
-const mentions = new EditorJSMentions({
-  holder: "editor",
-  triggerSymbols: ["@"],
-  mentionRenderContext: { currentUserId: "u-1002" },
-  renderMention: ({ item, defaultText, element, context }) => {
-    const ctx = context as { currentUserId?: string } | undefined;
-    element.textContent = defaultText;
-    element.style.fontWeight = ctx?.currentUserId === item.id ? "700" : "400";
-  },
-  provider: createRestMentionProvider({
-    endpoint: "http://localhost:3001/api/mentions/users"
-  })
-});
-
-mentions.setMentionRenderContext({ currentUserId: "u-1001" });
-
-const nativeOutput = await editor.save();
-const payloadForServer = encodeMentionsInOutput(nativeOutput);
-const payloadForEditor = decodeMentionsInOutput(payloadForServer);
-
-// later:
-// mentions.destroy();
-```
-
-## Mention Provider Contract
-
-The plugin consumes this model:
-
-```ts
-type MentionItem = {
-  id: string;
-  displayName: string;
-  description?: string;
-  image?: string;
-  link?: string;
-};
-```
-
-## Persisting Mention IDs
-
-Use `encodeMentionsInOutput(editor.save())` to convert display HTML into structured entities:
-
-```json
-{
-  "type": "paragraph",
-  "data": {
-    "text": "@John Doe @Raj Patel",
-    "entities": [
-      { "type": "mention", "id": "u-1001", "displayName": "John Doe", "start": 0, "end": 9 }
-    ]
-  }
-}
-```
-
-Providers implement:
-
-```ts
-type MentionProvider = (query: {
-  trigger: string;
-  query: string;
-  limit: number;
-}) => Promise<MentionItem[]>;
-```
-
-or:
-
-```ts
-interface MentionProviderObject {
-  search(query: MentionQuery): Promise<MentionItem[]>;
-}
-```
-
-## REST API Example
-
-`GET /api/mentions/users?query=jo&trigger=@&limit=8`
-
-Response:
-
-```json
-{
-  "items": [
-    {
-      "id": "u-1001",
-      "displayName": "John Doe",
-      "description": "Engineering",
-      "image": "https://..."
-    }
-  ]
-}
-```
-
-## Active Directory Example
-
-See `examples/server/.env.example` and set:
-
-- `AD_ENABLED=true`
-- `AD_URL`
-- `AD_BIND_DN`
-- `AD_BIND_PASSWORD`
-- `AD_BASE_DN`
-
-When enabled, the server switches to LDAP-backed lookup.
-
-For quick local LDAP testing with Docker, see `examples/server/README.md`.
-
-Shortcuts:
-
-- `npm run dev:ldap:up`
-- `npm run dev:ldap:down`
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## Release & Publish
 
@@ -191,21 +63,10 @@ Recommended flow:
 3. Verify:
    - `npm run typecheck --workspace @editorjs-mentions/plugin`
    - `npm run build --workspace @editorjs-mentions/plugin`
+   - `npm test`
 4. Commit changed files (`packages/editorjs-mentions/package.json`, `package-lock.json`).
 5. Create tag/release (for GitHub Actions publish workflow).
 
-Notes:
+## License
 
-- `examples/demo` uses local dependency (`file:../../packages/editorjs-mentions`) so demo version does not require manual sync.
-- Root package is private and does not require release version bump.
-
-License: MIT (`LICENSE`).
-
-## GitHub Actions
-
-- CI build workflow: `.github/workflows/ci.yml`
-- npm publish workflow: `.github/workflows/publish-npm.yml`
-
-For npm publish workflow, configure repository secret:
-
-- `NPM_TOKEN` - npm automation token with publish permissions for `@editorjs-mentions/plugin`.
+MIT (`LICENSE`).
