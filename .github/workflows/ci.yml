@@ -24,6 +24,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Test plugin
+        run: npm test --workspace @editorjs-mentions/plugin
+
       - name: Typecheck plugin
         run: npm run typecheck --workspace @editorjs-mentions/plugin
 
