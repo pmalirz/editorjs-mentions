@@ -1,7 +1,7 @@
 {
   "name": "editorjs-mentions-monorepo",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "Editor.js mentions plugin + sample REST server",
   "license": "MIT",
   "workspaces": [
@@ -17,10 +17,21 @@
     "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down",
     "version:plugin:patch": "npm version patch --workspace @editorjs-mentions/plugin --no-git-tag-version",
     "version:plugin:minor": "npm version minor --workspace @editorjs-mentions/plugin --no-git-tag-version",
-    "version:plugin:major": "npm version major --workspace @editorjs-mentions/plugin --no-git-tag-version"
+    "version:plugin:major": "npm version major --workspace @editorjs-mentions/plugin --no-git-tag-version",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pmalirz/editorjs-mentions.git"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.2.0",
+    "typescript-eslint": "^8.0.0"
   }
 }

@@ -37,6 +37,20 @@ npm install
 npm run build
 ```
 
+## Development
+
+Run linting:
+
+```bash
+npm run lint
+```
+
+Run tests:
+
+```bash
+npm test --workspace @editorjs-mentions/plugin
+```
+
 Run sample server:
 
 ```bash

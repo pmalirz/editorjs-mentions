@@ -2,6 +2,7 @@ import { MentionsDropdown } from "./dropdown";
 import { normalizeProvider } from "./providers";
 import { ensureMentionsStyleInjected } from "./styles";
 import type { MentionItem, MentionRenderSource, MentionsConfig } from "./types";
+import { escapeHtml } from "./utils";
 
 type ActiveContext = {
   trigger: string;
@@ -553,15 +554,6 @@ export class EditorJSMentions {
 
     return rect;
   }
-}
-
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function normalizeMentionAnchorsHtml(html: string): string {
