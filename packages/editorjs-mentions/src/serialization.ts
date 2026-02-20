@@ -1,4 +1,5 @@
 import type { EditorJSOutputLike, MentionEntity } from "./types";
+import { escapeAttr, escapeHtml } from "./utils";
 
 type MentionPayload = {
   id: string;
@@ -119,7 +120,7 @@ export function decodeMentionsToHtml(text: string, entities: MentionEntity[]): s
   }
 
   html += escapeHtml(text.slice(cursor));
-  return html.replace(/  /g, " &nbsp;");
+  return html.replace(/ {2}/g, " &nbsp;");
 }
 
 function renderMentionAnchor(displayText: string, entity: MentionEntity): string {
@@ -178,19 +179,6 @@ function isMentionEntity(value: unknown): value is MentionEntity {
     typeof item.start === "number" &&
     typeof item.end === "number"
   );
-}
-
-function escapeHtml(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function escapeAttr(input: string): string {
-  return escapeHtml(input).replace(/`/g, "&#96;");
 }
 
 function cloneOutput(output: EditorJSOutputLike): EditorJSOutputLike {
