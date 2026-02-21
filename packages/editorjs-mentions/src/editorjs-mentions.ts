@@ -1,8 +1,8 @@
 import { MentionsDropdown } from "./dropdown";
 import { normalizeProvider } from "./providers";
 import { ensureMentionsStyleInjected } from "./styles";
+import { MentionsTooltip } from "./tooltip";
 import type { MentionItem, MentionRenderSource, MentionsConfig } from "./types";
-import { escapeHtml } from "./utils";
 
 type ActiveContext = {
   trigger: string;
@@ -23,11 +23,11 @@ export class EditorJSMentions {
     Pick<MentionsConfig, "onSelect" | "renderItem" | "className" | "renderMention" | "mentionRenderContext">;
   private provider: ReturnType<typeof normalizeProvider>;
   private dropdown: MentionsDropdown;
+  private tooltip: MentionsTooltip;
   private debounceTimer: number | undefined;
   private requestSerial = 0;
   private activeContext: ActiveContext | null = null;
   private destroyed = false;
-  private tooltipRoot: HTMLDivElement;
 
   constructor(config: MentionsConfig) {
     this.holder =
@@ -59,10 +59,7 @@ export class EditorJSMentions {
       renderItem: this.config.renderItem,
       onSelect: (item) => this.selectMention(item)
     });
-    this.tooltipRoot = document.createElement("div");
-    this.tooltipRoot.className = "editorjs-mention-tooltip";
-    this.tooltipRoot.style.display = "none";
-    document.body.appendChild(this.tooltipRoot);
+    this.tooltip = new MentionsTooltip();
 
     this.bind();
     this.refreshMentionRendering();
@@ -102,7 +99,7 @@ export class EditorJSMentions {
       clearTimeout(this.debounceTimer);
     }
     this.dropdown.destroy();
-    this.tooltipRoot.remove();
+    this.tooltip.destroy();
   }
 
   private bind(): void {
@@ -122,12 +119,12 @@ export class EditorJSMentions {
       event.preventDefault();
       const item = this.readMentionFromElement(mentionNode);
       if (item) {
-        this.showTooltip(mentionNode, item);
+        this.tooltip.show(mentionNode, item);
       }
       return;
     }
 
-    this.hideTooltip();
+    this.tooltip.hide();
 
     if (!this.dropdown.isVisible()) {
       return;
@@ -136,7 +133,7 @@ export class EditorJSMentions {
   };
 
   private onDocumentMouseDown = (event: MouseEvent): void => {
-    if (!this.tooltipRoot || this.tooltipRoot.style.display === "none") {
+    if (!this.tooltip.isVisible()) {
       return;
     }
     const target = event.target as Node | null;
@@ -144,10 +141,10 @@ export class EditorJSMentions {
       return;
     }
     const clickedMention = target instanceof HTMLElement ? target.closest("a.editorjs-mention") : null;
-    if (clickedMention || this.tooltipRoot.contains(target)) {
+    if (clickedMention || this.tooltip.contains(target)) {
       return;
     }
-    this.hideTooltip();
+    this.tooltip.hide();
   };
 
   private onInput = (): void => {
@@ -445,39 +442,9 @@ export class EditorJSMentions {
     }
 
     this.dropdown.hide();
-    this.hideTooltip();
+    this.tooltip.hide();
     this.activeContext = null;
     this.config.onSelect?.(item);
-  }
-
-  private showTooltip(anchor: HTMLAnchorElement, item: MentionItem): void {
-    const rect = anchor.getBoundingClientRect();
-    const linkHtml = item.link
-      ? `<a class="editorjs-mention-tooltip-link" href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">Open details</a>`
-      : "";
-    const imageHtml = item.image
-      ? `<img class="editorjs-mention-tooltip-image" src="${escapeHtml(item.image)}" alt="${escapeHtml(item.displayName)}" />`
-      : `<div class="editorjs-mention-tooltip-placeholder">${escapeHtml(item.displayName.slice(0, 1).toUpperCase())}</div>`;
-
-    this.tooltipRoot.innerHTML = `
-      <div class="editorjs-mention-tooltip-inner">
-        ${imageHtml}
-        <div class="editorjs-mention-tooltip-main">
-          <div class="editorjs-mention-tooltip-name">${escapeHtml(item.displayName)}</div>
-          ${item.description ? `<div class="editorjs-mention-tooltip-description">${escapeHtml(item.description)}</div>` : ""}
-          ${linkHtml}
-        </div>
-      </div>
-    `;
-
-    this.tooltipRoot.style.display = "block";
-    this.tooltipRoot.style.left = `${Math.max(8, rect.left)}px`;
-    this.tooltipRoot.style.top = `${Math.max(8, rect.bottom + 6)}px`;
-  }
-
-  private hideTooltip(): void {
-    this.tooltipRoot.style.display = "none";
-    this.tooltipRoot.innerHTML = "";
   }
 
   private readMentionFromElement(anchor: HTMLAnchorElement): MentionItem | null {
