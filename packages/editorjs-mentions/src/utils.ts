@@ -1,5 +1,8 @@
 /**
- * Escapes special characters in a string for safe usage in HTML.
+ * Escapes special characters in a string for safe usage in HTML content.
+ *
+ * @param input - The string to escape.
+ * @returns The escaped string safe for HTML interpolation.
  */
 export function escapeHtml(input: string): string {
   return input
@@ -12,6 +15,10 @@ export function escapeHtml(input: string): string {
 
 /**
  * Escapes special characters in a string for safe usage in HTML attributes.
+ * Including backticks which can be dangerous in some contexts.
+ *
+ * @param input - The string to escape.
+ * @returns The escaped string safe for HTML attribute values.
  */
 export function escapeAttr(input: string): string {
   return escapeHtml(input).replace(/`/g, "&#96;");

@@ -6,6 +6,9 @@ type DropdownOptions = {
   onSelect: (item: MentionItem) => void;
 };
 
+/**
+ * Manages the dropdown menu for selecting mentions.
+ */
 export class MentionsDropdown {
   private root: HTMLDivElement;
   private items: MentionItem[] = [];
@@ -26,6 +29,12 @@ export class MentionsDropdown {
     document.body.appendChild(this.root);
   }
 
+  /**
+   * Shows the dropdown at the specified position with the given items.
+   *
+   * @param position - The coordinates {top, left} where the dropdown should appear.
+   * @param items - The list of mention items to display.
+   */
   show(position: { left: number; top: number }, items: MentionItem[]): void {
     this.items = items;
     this.activeIndex = 0;
@@ -41,8 +50,10 @@ export class MentionsDropdown {
       });
 
       if (this.renderItem) {
+        // If a custom render function is provided, we trust it returns safe HTML or that the user handles escaping.
         row.innerHTML = this.renderItem(item);
       } else {
+        // Default rendering: constructs DOM elements to ensure safety against XSS.
         const avatar = document.createElement("img");
         avatar.className = "editorjs-mentions-item-avatar";
         avatar.alt = item.displayName;
@@ -82,20 +93,35 @@ export class MentionsDropdown {
     this.root.style.display = items.length > 0 ? "block" : "none";
   }
 
+  /**
+   * Hides the dropdown and clears the items.
+   */
   hide(): void {
     this.root.style.display = "none";
     this.items = [];
     this.activeIndex = 0;
   }
 
+  /**
+   * Checks if the dropdown is currently visible.
+   * @returns True if visible, false otherwise.
+   */
   isVisible(): boolean {
     return this.root.style.display !== "none";
   }
 
+  /**
+   * Checks if the dropdown has any items.
+   * @returns True if items array is not empty.
+   */
   hasItems(): boolean {
     return this.items.length > 0;
   }
 
+  /**
+   * Moves the active selection up by one item.
+   * Cycles to the bottom if at the top.
+   */
   moveUp(): void {
     if (!this.items.length) {
       return;
@@ -104,6 +130,10 @@ export class MentionsDropdown {
     this.syncActiveRow();
   }
 
+  /**
+   * Moves the active selection down by one item.
+   * Cycles to the top if at the bottom.
+   */
   moveDown(): void {
     if (!this.items.length) {
       return;
@@ -112,6 +142,9 @@ export class MentionsDropdown {
     this.syncActiveRow();
   }
 
+  /**
+   * Triggers the selection of the currently active item.
+   */
   chooseActive(): void {
     if (!this.items.length) {
       return;
@@ -119,6 +152,9 @@ export class MentionsDropdown {
     this.onSelect(this.items[this.activeIndex]);
   }
 
+  /**
+   * Destroys the dropdown element, removing it from the DOM.
+   */
   destroy(): void {
     this.root.remove();
   }
@@ -133,4 +169,3 @@ export class MentionsDropdown {
     });
   }
 }
-

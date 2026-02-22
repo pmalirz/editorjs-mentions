@@ -83,4 +83,43 @@ describe("MentionsTooltip", () => {
     expect(tooltip.contains(inner)).toBe(true);
     expect(tooltip.contains(document.body)).toBe(false);
   });
+
+  it("should escape HTML in item fields", () => {
+    const maliciousItem: MentionItem = {
+      id: "1",
+      displayName: "<img src=x onerror=alert(1)>",
+      description: "Desc <br>",
+      link: '"> <script>alert(1)</script>',
+      image: '"> <img src=x>',
+    };
+    const anchor = document.createElement("a");
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+    });
+
+    tooltip.show(anchor, maliciousItem);
+    const tooltipEl = document.querySelector(".editorjs-mention-tooltip") as HTMLElement;
+    const html = tooltipEl.innerHTML;
+
+    // Verify content is escaped in text content
+    expect(html).toContain("&lt;img src=x onerror=alert(1)&gt;");
+    expect(html).toContain("Desc &lt;br&gt;");
+
+    // Verify attributes didn't break out
+    const img = tooltipEl.querySelector("img");
+    expect(img).not.toBeNull();
+    // In JSDOM/HTML, entities in attributes are decoded when accessing the property or sometimes in innerHTML
+    // But importantly, the structure should verify no extra tags were created.
+
+    // Ensure no new tags were injected
+    expect(tooltipEl.querySelectorAll("img").length).toBe(1); // Only the avatar
+    expect(tooltipEl.querySelectorAll("script").length).toBe(0); // No script tags
+
+    // Verify the attribute values contain the malicious string safely
+    expect(img?.getAttribute("src")).toBe('"> <img src=x>');
+    expect(img?.getAttribute("alt")).toBe('<img src=x onerror=alert(1)>');
+
+    const link = tooltipEl.querySelector("a");
+    expect(link?.getAttribute("href")).toBe('"> <script>alert(1)</script>');
+  });
 });

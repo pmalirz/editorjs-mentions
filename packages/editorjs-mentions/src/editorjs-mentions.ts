@@ -12,6 +12,11 @@ type ActiveContext = {
   endOffset: number;
 };
 
+/**
+ * Main class for the Editor.js Mentions plugin.
+ * Handles the logic for detecting triggers, showing the dropdown,
+ * managing selection, and rendering mentions.
+ */
 export class EditorJSMentions {
   private holder: HTMLElement;
   private config: Required<
@@ -29,6 +34,11 @@ export class EditorJSMentions {
   private activeContext: ActiveContext | null = null;
   private destroyed = false;
 
+  /**
+   * Initializes the Mentions plugin.
+   *
+   * @param config - Configuration options for the plugin.
+   */
   constructor(config: MentionsConfig) {
     this.holder =
       typeof config.holder === "string"
@@ -65,11 +75,21 @@ export class EditorJSMentions {
     this.refreshMentionRendering();
   }
 
+  /**
+   * Updates the context used for rendering mentions (e.g. current user ID).
+   * Refreshes the rendering of all existing mentions in the editor.
+   *
+   * @param context - The new context object.
+   */
   setMentionRenderContext(context: unknown): void {
     this.config.mentionRenderContext = context;
     this.refreshMentionRendering();
   }
 
+  /**
+   * Re-applies the rendering logic to all existing mention elements in the editor.
+   * Useful when external state affecting mention appearance changes.
+   */
   refreshMentionRendering(): void {
     const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
     for (const mention of mentions) {
@@ -83,6 +103,10 @@ export class EditorJSMentions {
     }
   }
 
+  /**
+   * Cleans up event listeners and removes UI elements (dropdown, tooltip).
+   * Should be called when the plugin or editor is destroyed.
+   */
   destroy(): void {
     if (this.destroyed) {
       return;
@@ -523,6 +547,14 @@ export class EditorJSMentions {
   }
 }
 
+/**
+ * Normalizes HTML content containing mention anchors.
+ * Reconstructs the anchors to ensure they have the correct data attributes and structure.
+ * Useful for handling pasted content.
+ *
+ * @param html - The HTML string to normalize.
+ * @returns The normalized HTML string.
+ */
 function normalizeMentionAnchorsHtml(html: string): string {
   const root = document.createElement("div");
   root.innerHTML = html;

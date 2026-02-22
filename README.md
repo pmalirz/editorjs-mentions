@@ -30,7 +30,17 @@
 - `examples/server`: sample REST backend (Express + TypeScript)
 - `examples/demo`: minimal integration example
 
-## Quick Start
+## Installation
+
+To use the plugin in your project:
+
+```bash
+npm install @editorjs-mentions/plugin
+```
+
+See [packages/editorjs-mentions/README.md](packages/editorjs-mentions/README.md) for full documentation.
+
+## Development Setup
 
 ```bash
 npm install

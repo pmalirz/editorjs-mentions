@@ -132,6 +132,21 @@ Expected endpoint example:
 
 `GET /api/mentions/users?query=jo&trigger=@&limit=8`
 
+Response:
+
+```json
+{
+  "items": [
+    {
+      "id": "u-1001",
+      "displayName": "John Doe",
+      "description": "Engineering",
+      "image": "https://..."
+    }
+  ]
+}
+```
+
 ## Clipboard Notes
 
 - Copy/paste inside Editor.js keeps mention metadata.

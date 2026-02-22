@@ -91,4 +91,22 @@ describe("MentionsDropdown", () => {
 
     expect(onSelectMock).toHaveBeenCalledWith(mockItems[2]);
   });
+
+  it("should render default item structure safely with special characters", () => {
+    const maliciousItem: MentionItem = {
+      id: "4",
+      displayName: "<script>alert('xss')</script>",
+      description: "<b>bold</b>",
+    };
+
+    dropdown.show({ left: 100, top: 100 }, [maliciousItem]);
+    const nameEl = document.querySelector(".editorjs-mentions-item-name");
+    const descEl = document.querySelector(".editorjs-mentions-item-description");
+
+    expect(nameEl?.textContent).toBe("<script>alert('xss')</script>");
+    expect(nameEl?.innerHTML).not.toContain("<script>");
+
+    expect(descEl?.textContent).toBe("<b>bold</b>");
+    expect(descEl?.innerHTML).not.toContain("<b>");
+  });
 });
