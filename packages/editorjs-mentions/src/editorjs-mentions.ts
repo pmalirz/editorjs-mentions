@@ -30,13 +30,15 @@ export class EditorJSMentions {
   private destroyed = false;
 
   constructor(config: MentionsConfig) {
-    this.holder =
-      typeof config.holder === "string"
-        ? (document.getElementById(config.holder) ??
-          (() => {
-            throw new Error(`Cannot find holder element by id: ${config.holder}`);
-          })())
-        : config.holder;
+    if (typeof config.holder === "string") {
+      const el = document.getElementById(config.holder);
+      if (!el) {
+        throw new Error(`Cannot find holder element by id: ${config.holder}`);
+      }
+      this.holder = el;
+    } else {
+      this.holder = config.holder;
+    }
 
     this.config = {
       triggerSymbols: config.triggerSymbols ?? ["@"],
@@ -524,8 +526,9 @@ export class EditorJSMentions {
 }
 
 function normalizeMentionAnchorsHtml(html: string): string {
-  const root = document.createElement("div");
-  root.innerHTML = html;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const root = doc.body;
 
   const mentions = Array.from(root.querySelectorAll("a.editorjs-mention, span.editorjs-mention"));
   for (const mention of mentions) {

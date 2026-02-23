@@ -1,5 +1,8 @@
 # @editorjs-mentions/plugin
 
+[![npm latest](https://img.shields.io/npm/v/%40editorjs-mentions%2Fplugin/latest?style=flat-square)](https://www.npmjs.com/package/@editorjs-mentions/plugin)
+[![License](https://img.shields.io/github/license/pmalirz/editorjs-mentions?style=flat-square)](https://github.com/pmalirz/editorjs-mentions/blob/main/LICENSE)
+
 Mentions autocomplete plugin for Editor.js.
 
 ![Mentions usage demo](docs/mentions-usage-example.gif)
