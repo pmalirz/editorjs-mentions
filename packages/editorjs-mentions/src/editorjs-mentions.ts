@@ -3,6 +3,7 @@ import { normalizeProvider } from "./providers";
 import { ensureMentionsStyleInjected } from "./styles";
 import { MentionsTooltip } from "./tooltip";
 import type { MentionItem, MentionRenderSource, MentionsConfig } from "./types";
+import { sanitizeHtml } from "./utils";
 
 type ActiveContext = {
   trigger: string;
@@ -12,6 +13,10 @@ type ActiveContext = {
   endOffset: number;
 };
 
+/**
+ * Editor.js Mentions plugin.
+ * Adds mention support to Editor.js.
+ */
 export class EditorJSMentions {
   private holder: HTMLElement;
   private config: Required<
@@ -29,6 +34,9 @@ export class EditorJSMentions {
   private activeContext: ActiveContext | null = null;
   private destroyed = false;
 
+  /**
+   * @param config - The configuration object.
+   */
   constructor(config: MentionsConfig) {
     this.holder =
       typeof config.holder === "string"
@@ -65,11 +73,20 @@ export class EditorJSMentions {
     this.refreshMentionRendering();
   }
 
+  /**
+   * Sets the mention render context.
+   * Useful for dynamic styling of mentions based on external state (e.g. current user).
+   * @param context - The context object.
+   */
   setMentionRenderContext(context: unknown): void {
     this.config.mentionRenderContext = context;
     this.refreshMentionRendering();
   }
 
+  /**
+   * Refreshes the rendering of all mentions in the holder.
+   * Should be called when the mention render context changes or when the content needs to be re-rendered.
+   */
   refreshMentionRendering(): void {
     const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
     for (const mention of mentions) {
@@ -83,6 +100,9 @@ export class EditorJSMentions {
     }
   }
 
+  /**
+   * Destroys the plugin instance and removes event listeners.
+   */
   destroy(): void {
     if (this.destroyed) {
       return;
@@ -524,8 +544,9 @@ export class EditorJSMentions {
 }
 
 function normalizeMentionAnchorsHtml(html: string): string {
+  const safeHtml = sanitizeHtml(html);
   const root = document.createElement("div");
-  root.innerHTML = html;
+  root.innerHTML = safeHtml;
 
   const mentions = Array.from(root.querySelectorAll("a.editorjs-mention, span.editorjs-mention"));
   for (const mention of mentions) {

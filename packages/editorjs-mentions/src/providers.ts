@@ -17,6 +17,10 @@ export type RestProviderOptions = {
   mapResponse?: (json: unknown) => MentionItem[];
 };
 
+/**
+ * Creates a mention provider that fetches data from a REST endpoint.
+ * @param options - Configuration for the REST provider.
+ */
 export function createRestMentionProvider(options: RestProviderOptions): MentionProviderFn {
   const queryParam = options.queryParam ?? "query";
   const triggerParam = options.triggerParam ?? "trigger";

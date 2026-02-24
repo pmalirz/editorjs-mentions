@@ -48,8 +48,9 @@ export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
 }
 
 export function encodeMentionsFromHtml(html: string): { text: string; entities: MentionEntity[] } {
-  const root = document.createElement("div");
-  root.innerHTML = html;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  const root = doc.body;
 
   const entities: MentionEntity[] = [];
   let text = "";
