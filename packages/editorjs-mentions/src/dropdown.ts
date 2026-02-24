@@ -1,4 +1,5 @@
 import type { MentionItem } from "./types";
+import { escapeHtml } from "./utils";
 
 type DropdownOptions = {
   className?: string;
@@ -49,9 +50,9 @@ export class MentionsDropdown {
         avatar.src =
           item.image ||
           `data:image/svg+xml,${encodeURIComponent(
-            `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect width="28" height="28" fill="#D5DEF0"/><text x="50%" y="55%" text-anchor="middle" fill="#334155" font-size="12" font-family="sans-serif">${item.displayName
-              .slice(0, 1)
-              .toUpperCase()}</text></svg>`
+            `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"><rect width="28" height="28" fill="#D5DEF0"/><text x="50%" y="55%" text-anchor="middle" fill="#334155" font-size="12" font-family="sans-serif">${escapeHtml(
+              item.displayName.slice(0, 1).toUpperCase()
+            )}</text></svg>`
           )}`;
 
         const main = document.createElement("div");
