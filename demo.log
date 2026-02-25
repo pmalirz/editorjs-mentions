@@ -1,0 +1,13 @@
+
+> editorjs-mentions-monorepo@0.1.5 dev:demo
+> npm run dev --workspace @editorjs-mentions/example-demo
+
+
+> @editorjs-mentions/example-demo@0.1.0 dev
+> vite
+
+
+  VITE v5.4.21  ready in 275 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose

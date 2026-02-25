@@ -83,4 +83,42 @@ describe("MentionsTooltip", () => {
     expect(tooltip.contains(inner)).toBe(true);
     expect(tooltip.contains(document.body)).toBe(false);
   });
+
+  it("should not render dangerous links", () => {
+    const maliciousItem: MentionItem = {
+      ...mockItem,
+      link: "javascript:alert(1)",
+    };
+    const anchor = document.createElement("a");
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+    });
+
+    tooltip.show(anchor, maliciousItem);
+
+    const tooltipEl = document.querySelector(".editorjs-mention-tooltip") as HTMLElement;
+    const linkEl = tooltipEl.querySelector("a.editorjs-mention-tooltip-link");
+    expect(linkEl).toBeNull();
+  });
+
+  it("should fallback to placeholder if image is invalid protocol", () => {
+    const maliciousItem: MentionItem = {
+      ...mockItem,
+      image: "javascript:alert(1)",
+    };
+    const anchor = document.createElement("a");
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+    });
+
+    tooltip.show(anchor, maliciousItem);
+
+    const tooltipEl = document.querySelector(".editorjs-mention-tooltip") as HTMLElement;
+    const imgEl = tooltipEl.querySelector("img.editorjs-mention-tooltip-image");
+    expect(imgEl).toBeNull();
+
+    const placeholder = tooltipEl.querySelector(".editorjs-mention-tooltip-placeholder");
+    expect(placeholder).not.toBeNull();
+    expect(placeholder?.textContent).toBe("J"); // First letter of John Doe
+  });
 });

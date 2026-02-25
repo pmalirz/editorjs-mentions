@@ -1,0 +1,9 @@
+
+> editorjs-mentions-monorepo@0.1.5 dev:server
+> npm run dev --workspace @editorjs-mentions/example-server
+
+
+> @editorjs-mentions/example-server@0.1.2 dev
+> tsx watch src/index.ts
+
+editorjs-mentions sample server listening on http://localhost:3001
