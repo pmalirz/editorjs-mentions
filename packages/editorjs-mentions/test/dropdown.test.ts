@@ -12,7 +12,8 @@ describe("MentionsDropdown", () => {
 
   beforeEach(() => {
     document.body.innerHTML = "";
-    window.HTMLElement.prototype.scrollIntoView = jest.fn();
+    // Mock scrollIntoView
+    Element.prototype.scrollIntoView = jest.fn();
     onSelectMock = jest.fn();
     dropdown = new MentionsDropdown({
       onSelect: onSelectMock,
@@ -90,5 +91,19 @@ describe("MentionsDropdown", () => {
     items[2].dispatchEvent(event);
 
     expect(onSelectMock).toHaveBeenCalledWith(mockItems[2]);
+  });
+
+  it("should not render dangerous images in dropdown", () => {
+    const dangerousItem: MentionItem = {
+      id: "4",
+      displayName: "Evil Dropdown",
+      image: "javascript:alert(1)"
+    };
+    dropdown.show({ left: 0, top: 0 }, [dangerousItem]);
+
+    const avatar = document.querySelector(".editorjs-mentions-item-avatar") as HTMLImageElement;
+    expect(avatar.src).not.toContain("javascript:");
+    // Should be svg data uri
+    expect(avatar.src).toContain("data:image/svg+xml");
   });
 });

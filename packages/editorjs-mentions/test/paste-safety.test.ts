@@ -51,6 +51,7 @@ describe("Paste Safety", () => {
 
     // We need to overwrite getSelection on window
     const originalGetSelection = window.getSelection;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.getSelection = jest.fn(() => selection as any);
 
     // Mock createContextualFragment

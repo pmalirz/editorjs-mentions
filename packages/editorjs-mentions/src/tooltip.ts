@@ -1,4 +1,5 @@
 import type { MentionItem } from "./types";
+import { isValidUrl } from "./utils";
 
 export class MentionsTooltip {
   private tooltipRoot: HTMLDivElement;
@@ -18,7 +19,7 @@ export class MentionsTooltip {
     const inner = document.createElement("div");
     inner.className = "editorjs-mention-tooltip-inner";
 
-    if (item.image) {
+    if (item.image && isValidUrl(item.image, ["http:", "https:", "data:"])) {
       const img = document.createElement("img");
       img.className = "editorjs-mention-tooltip-image";
       img.src = item.image;
@@ -46,7 +47,7 @@ export class MentionsTooltip {
       main.appendChild(description);
     }
 
-    if (item.link) {
+    if (item.link && isValidUrl(item.link)) {
       const link = document.createElement("a");
       link.className = "editorjs-mention-tooltip-link";
       link.href = item.link;

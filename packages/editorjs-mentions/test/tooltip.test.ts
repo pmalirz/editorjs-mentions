@@ -83,4 +83,41 @@ describe("MentionsTooltip", () => {
     expect(tooltip.contains(inner)).toBe(true);
     expect(tooltip.contains(document.body)).toBe(false);
   });
+
+  it("should not render dangerous links", () => {
+    const dangerousItem: MentionItem = {
+      id: "2",
+      displayName: "Evil",
+      link: "javascript:alert(1)"
+    };
+    const anchor = document.createElement("a");
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+    });
+
+    tooltip.show(anchor, dangerousItem);
+
+    const tooltipEl = document.querySelector(".editorjs-mention-tooltip") as HTMLElement;
+    expect(tooltipEl.innerHTML).not.toContain("javascript:alert(1)");
+    expect(tooltipEl.querySelector("a")).toBeNull();
+  });
+
+  it("should not render dangerous images", () => {
+    const dangerousItem: MentionItem = {
+      id: "3",
+      displayName: "Evil Img",
+      image: "javascript:alert(1)"
+    };
+    const anchor = document.createElement("a");
+    jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
+      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+    });
+
+    tooltip.show(anchor, dangerousItem);
+
+    const tooltipEl = document.querySelector(".editorjs-mention-tooltip") as HTMLElement;
+    expect(tooltipEl.innerHTML).not.toContain("src=\"javascript:alert(1)\"");
+    // Should render placeholder instead
+    expect(tooltipEl.querySelector(".editorjs-mention-tooltip-placeholder")).not.toBeNull();
+  });
 });
