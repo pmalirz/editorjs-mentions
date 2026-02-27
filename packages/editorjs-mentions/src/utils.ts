@@ -18,6 +18,20 @@ export function escapeAttr(input: string): string {
 }
 
 /**
+ * Checks if a URL is safe to use in href or src attributes.
+ * Rejects javascript: and vbscript: protocols.
+ */
+export function isValidUrl(url: string): boolean {
+  if (!url) return false;
+  // Remove whitespace and control characters to prevent bypasses
+  // eslint-disable-next-line no-control-regex
+  const normalized = url.replace(/[\s\x00-\x1F]/g, "").toLowerCase();
+
+  const forbidden = ["javascript:", "vbscript:"];
+  return !forbidden.some((protocol) => normalized.startsWith(protocol));
+}
+
+/**
  * Sanitizes HTML string by removing dangerous tags and attributes.
  * Uses DOMParser to parse and traverse the HTML.
  */
@@ -38,11 +52,10 @@ export function sanitizeHtml(html: string): string {
       if (attr.name.startsWith("on")) {
         attrsToRemove.push(attr.name);
       }
-      if (
-        (attr.name === "href" || attr.name === "src") &&
-        attr.value.trim().toLowerCase().startsWith("javascript:")
-      ) {
-        attrsToRemove.push(attr.name);
+      if (attr.name === "href" || attr.name === "src") {
+        if (!isValidUrl(attr.value)) {
+          attrsToRemove.push(attr.name);
+        }
       }
     }
     attrsToRemove.forEach((attr) => el.removeAttribute(attr));

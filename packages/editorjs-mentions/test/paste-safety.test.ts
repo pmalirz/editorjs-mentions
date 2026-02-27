@@ -51,7 +51,7 @@ describe("Paste Safety", () => {
 
     // We need to overwrite getSelection on window
     const originalGetSelection = window.getSelection;
-    window.getSelection = jest.fn(() => selection as any);
+    window.getSelection = jest.fn(() => selection as unknown as Selection);
 
     // Mock createContextualFragment
     range.createContextualFragment = jest.fn((html) => {

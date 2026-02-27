@@ -8,36 +8,31 @@
 
 `editorjs-mentions` is an Editor.js plugin that enables mention-style autocomplete (similar to JIRA/Confluence).
 
-![Mentions usage demo](docs/mentions-usage-example.gif)
+![Mentions usage demo](packages/editorjs-mentions/docs/mentions-usage-example.gif)
 
 ## Features
 
 - Trigger autocomplete with `@` (or custom trigger symbols).
 - Pluggable provider API for mention data.
-- Standard mention model:
-  - `id: string`
-  - `displayName: string`
-  - `description?: string`
-  - `image?: string`
-  - `link?: string`
-- Sample REST server with:
-  - in-memory demo users
-  - Active Directory-backed example provider
+- Standard mention model.
+- Sample REST server with in-memory demo users and Active Directory support.
 
 ## Monorepo Layout
 
-- `packages/editorjs-mentions`: plugin package (TypeScript)
-- `examples/server`: sample REST backend (Express + TypeScript)
-- `examples/demo`: minimal integration example
+- [`packages/editorjs-mentions`](packages/editorjs-mentions): The core plugin package (TypeScript). **See this directory for plugin documentation.**
+- [`examples/server`](examples/server): Sample REST backend (Express + TypeScript).
+- [`examples/demo`](examples/demo): Minimal integration example.
 
-## Quick Start
+## Quick Start (Development)
+
+To set up the development environment:
 
 ```bash
 npm install
 npm run build
 ```
 
-## Development
+## Development Commands
 
 Run linting:
 
@@ -45,7 +40,7 @@ Run linting:
 npm run lint
 ```
 
-Run tests:
+Run tests for the plugin:
 
 ```bash
 npm test --workspace @editorjs-mentions/plugin
@@ -65,148 +60,11 @@ npm run dev:demo
 
 ## Plugin Usage
 
-```ts
-import EditorJS from "@editorjs/editorjs";
-import {
-  EditorJSMentions,
-  createRestMentionProvider
-} from "@editorjs-mentions/plugin";
-
-const editor = new EditorJS({ holder: "editor" });
-await editor.isReady;
-
-const mentions = new EditorJSMentions({
-  holder: "editor",
-  triggerSymbols: ["@"],
-  provider: createRestMentionProvider({
-    endpoint: "http://localhost:3001/api/mentions/users"
-  })
-});
-
-// later:
-// mentions.destroy();
-```
-
-## Config
-
-- `holder: string | HTMLElement` - Editor.js holder element or id.
-- `provider` - mention source function/object (required).
-- `triggerSymbols?: string[]` - defaults to `["@"]`.
-- `maxResults?: number` - defaults to `8`.
-- `minChars?: number` - defaults to `0`.
-- `debounceMs?: number` - defaults to `160`.
-- `className?: string` - custom dropdown class.
-- `onSelect?: (item) => void`.
-- `renderItem?: (item) => string`.
-- `renderMention?: (args) => void`.
-- `mentionRenderContext?: unknown`.
-
-## Mention Data Model
-
-```ts
-type MentionItem = {
-  id: string;
-  displayName: string;
-  description?: string;
-  image?: string;
-  link?: string;
-};
-```
-
-## Save/Load with Stable IDs
-
-Use helper functions to send stable mention IDs to backend and restore output for Editor.js.
-
-```ts
-import { encodeMentionsInOutput, decodeMentionsInOutput } from "@editorjs-mentions/plugin";
-
-const nativeOutput = await editor.save();
-const payloadForServer = encodeMentionsInOutput(nativeOutput);
-
-// later when loading:
-const payloadForEditor = decodeMentionsInOutput(payloadForServer);
-```
-
-Example serialized paragraph:
-
-```json
-{
-  "type": "paragraph",
-  "data": {
-    "text": "@John Doe @Raj Patel",
-    "entities": [
-      {
-        "type": "mention",
-        "id": "u-1001",
-        "displayName": "John Doe",
-        "start": 0,
-        "end": 9
-      }
-    ]
-  }
-}
-```
-
-## Dynamic Mention Styling
-
-```ts
-const mentions = new EditorJSMentions({
-  holder: "editor",
-  provider,
-  mentionRenderContext: { currentUserId: "u-1002" },
-  renderMention: ({ item, defaultText, element, context }) => {
-    const ctx = context as { currentUserId?: string } | undefined;
-    element.textContent = defaultText;
-    element.style.fontWeight = ctx?.currentUserId === item.id ? "700" : "400";
-  }
-});
-
-mentions.setMentionRenderContext({ currentUserId: "u-1001" });
-mentions.refreshMentionRendering();
-```
-
-## REST Provider
-
-Use built-in provider factory:
-
-```ts
-createRestMentionProvider({
-  endpoint: "http://localhost:3001/api/mentions/users"
-});
-```
-
-Expected endpoint example:
-
-`GET /api/mentions/users?query=jo&trigger=@&limit=8`
-
-Response:
-
-```json
-{
-  "items": [
-    {
-      "id": "u-1001",
-      "displayName": "John Doe",
-      "description": "Engineering",
-      "image": "https://..."
-    }
-  ]
-}
-```
+Please refer to the [Plugin README](packages/editorjs-mentions/README.md) for detailed usage instructions, configuration options, and API documentation.
 
 ## Active Directory Example
 
-See `examples/server/.env.example` and set:
-
-- `AD_ENABLED=true`
-- `AD_URL`
-- `AD_BIND_DN`
-- `AD_BIND_PASSWORD`
-- `AD_BASE_DN`
-
-When enabled, the server switches to LDAP-backed lookup.
-
-For quick local LDAP testing with Docker, see `examples/server/README.md`.
+The sample server supports LDAP-backed lookup. See [`examples/server/README.md`](examples/server/README.md) for setup instructions using Docker.
 
 Shortcuts:
 

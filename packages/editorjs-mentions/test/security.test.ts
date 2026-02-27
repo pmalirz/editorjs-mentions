@@ -1,6 +1,4 @@
 import { MentionsDropdown } from "../src/dropdown";
-import { EditorJSMentions } from "../src/editorjs-mentions";
-import { escapeHtml } from "../src/utils";
 
 describe("Security", () => {
   let container: HTMLElement;
