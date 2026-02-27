@@ -30,7 +30,7 @@ export class MentionsDropdown {
   show(position: { left: number; top: number }, items: MentionItem[]): void {
     this.items = items;
     this.activeIndex = 0;
-    this.root.innerHTML = "";
+    this.root.replaceChildren();
 
     items.forEach((item, index) => {
       const row = document.createElement("div");

@@ -14,7 +14,7 @@ export class MentionsTooltip {
   show(anchor: HTMLElement, item: MentionItem): void {
     const rect = anchor.getBoundingClientRect();
 
-    this.tooltipRoot.innerHTML = "";
+    this.tooltipRoot.replaceChildren();
 
     const inner = document.createElement("div");
     inner.className = "editorjs-mention-tooltip-inner";
@@ -67,7 +67,7 @@ export class MentionsTooltip {
 
   hide(): void {
     this.tooltipRoot.style.display = "none";
-    this.tooltipRoot.innerHTML = "";
+    this.tooltipRoot.replaceChildren();
   }
 
   isVisible(): boolean {
