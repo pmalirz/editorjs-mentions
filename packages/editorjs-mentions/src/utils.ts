@@ -19,7 +19,7 @@ export function escapeAttr(input: string): string {
 
 /**
  * Checks if a URL is safe to use in href or src attributes.
- * Rejects javascript: and vbscript: protocols.
+ * Allows only whitelisted protocols.
  */
 export function isValidUrl(url: string): boolean {
   if (!url) return false;
@@ -27,8 +27,14 @@ export function isValidUrl(url: string): boolean {
   // eslint-disable-next-line no-control-regex
   const normalized = url.replace(/[\s\x00-\x1F]/g, "").toLowerCase();
 
-  const forbidden = ["javascript:", "vbscript:"];
-  return !forbidden.some((protocol) => normalized.startsWith(protocol));
+  // Allow relative URLs starting with / but not // (protocol-relative) to avoid cross-domain issues
+  // Also allow anchors (#)
+  if ((normalized.startsWith("/") && !normalized.startsWith("//")) || normalized.startsWith("#")) {
+    return true;
+  }
+
+  const allowedProtocols = ["http:", "https:", "mailto:", "tel:", "mention:"];
+  return allowedProtocols.some((protocol) => normalized.startsWith(protocol));
 }
 
 /**
