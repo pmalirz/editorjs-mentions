@@ -7,6 +7,9 @@ type DropdownOptions = {
   onSelect: (item: MentionItem) => void;
 };
 
+/**
+ * Renders the mention autocomplete dropdown overlay.
+ */
 export class MentionsDropdown {
   private root: HTMLDivElement;
   private items: MentionItem[] = [];
@@ -15,6 +18,10 @@ export class MentionsDropdown {
   private renderItem?: (item: MentionItem) => string;
   private className?: string;
 
+  /**
+   * Initializes the dropdown with the given options.
+   * @param options - Configuration options for the dropdown.
+   */
   constructor(options: DropdownOptions) {
     this.onSelect = options.onSelect;
     this.renderItem = options.renderItem;
@@ -27,6 +34,11 @@ export class MentionsDropdown {
     document.body.appendChild(this.root);
   }
 
+  /**
+   * Displays the dropdown with the given items at the specified position.
+   * @param position - The coordinates to show the dropdown.
+   * @param items - The list of mention items to display.
+   */
   show(position: { left: number; top: number }, items: MentionItem[]): void {
     this.items = items;
     this.activeIndex = 0;
@@ -83,20 +95,34 @@ export class MentionsDropdown {
     this.root.style.display = items.length > 0 ? "block" : "none";
   }
 
+  /**
+   * Hides the dropdown and clears the active items.
+   */
   hide(): void {
     this.root.style.display = "none";
     this.items = [];
     this.activeIndex = 0;
   }
 
+  /**
+   * Returns whether the dropdown is currently visible.
+   * @returns true if visible, false otherwise.
+   */
   isVisible(): boolean {
     return this.root.style.display !== "none";
   }
 
+  /**
+   * Returns whether the dropdown currently has items to display.
+   * @returns true if it has items, false otherwise.
+   */
   hasItems(): boolean {
     return this.items.length > 0;
   }
 
+  /**
+   * Selects the previous item in the dropdown list, wrapping around if necessary.
+   */
   moveUp(): void {
     if (!this.items.length) {
       return;
@@ -105,6 +131,9 @@ export class MentionsDropdown {
     this.syncActiveRow();
   }
 
+  /**
+   * Selects the next item in the dropdown list, wrapping around if necessary.
+   */
   moveDown(): void {
     if (!this.items.length) {
       return;
@@ -113,6 +142,9 @@ export class MentionsDropdown {
     this.syncActiveRow();
   }
 
+  /**
+   * Commits the currently active item, firing the onSelect callback.
+   */
   chooseActive(): void {
     if (!this.items.length) {
       return;
@@ -120,17 +152,22 @@ export class MentionsDropdown {
     this.onSelect(this.items[this.activeIndex]);
   }
 
+  /**
+   * Destroys the dropdown and cleans up DOM elements.
+   */
   destroy(): void {
     this.root.remove();
   }
 
   private syncActiveRow(): void {
-    Array.from(this.root.children).forEach((child, index) => {
+    let index = 0;
+    for (const child of this.root.children) {
       const row = child as HTMLElement;
       row.dataset.active = index === this.activeIndex ? "true" : "false";
       if (index === this.activeIndex) {
         row.scrollIntoView({ block: "nearest" });
       }
-    });
+      index++;
+    }
   }
 }
