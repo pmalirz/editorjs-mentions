@@ -54,7 +54,8 @@ export function sanitizeHtml(html: string): string {
   const all = doc.querySelectorAll("*");
   for (const el of all) {
     const attrsToRemove: string[] = [];
-    for (const attr of Array.from(el.attributes)) {
+    for (let i = el.attributes.length - 1; i >= 0; i--) {
+      const attr = el.attributes[i];
       if (attr.name.startsWith("on")) {
         attrsToRemove.push(attr.name);
       }

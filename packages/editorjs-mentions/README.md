@@ -146,3 +146,7 @@ Expected endpoint example:
 - `createRestMentionProvider(options)`
 - `encodeMentionsInOutput(output)`
 - `decodeMentionsInOutput(output)`
+
+## Guidelines
+
+This Editor.js plugin follows recommendations and guidelines provided by https://editorjs.io/.

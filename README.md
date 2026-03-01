@@ -104,3 +104,7 @@ License: MIT (`LICENSE`).
 For npm publish workflow, configure repository secret:
 
 - `NPM_TOKEN` - npm automation token with publish permissions for `@editorjs-mentions/plugin`.
+
+## Guidelines
+
+This Editor.js plugin follows recommendations and guidelines provided by https://editorjs.io/.

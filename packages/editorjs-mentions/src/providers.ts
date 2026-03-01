@@ -8,12 +8,24 @@ export function normalizeProvider(provider: MentionProvider): MentionProviderFn 
   return provider.search.bind(provider);
 }
 
+/**
+ * Configuration options for the REST mention provider.
+ */
 export type RestProviderOptions = {
+  /** The URL endpoint to query mentions. */
   endpoint: string;
+  /** Name of the URL query parameter used for search text. Defaults to "query". */
   queryParam?: string;
+  /** Name of the URL query parameter used for trigger symbol. Defaults to "trigger". */
   triggerParam?: string;
+  /** Name of the URL query parameter used for max results limit. Defaults to "limit". */
   limitParam?: string;
+  /** Additional initialization options for the `fetch` API call. */
   fetchInit?: RequestInit;
+  /**
+   * Custom mapping function that converts the response json into an array of `MentionItem`s.
+   * If not provided, defaults to looking for an `items` array property in the JSON.
+   */
   mapResponse?: (json: unknown) => MentionItem[];
 };
 

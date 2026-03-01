@@ -88,8 +88,7 @@ export class EditorJSMentions {
    * Should be called when the mention render context changes or when the content needs to be re-rendered.
    */
   refreshMentionRendering(): void {
-    const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
-    for (const mention of mentions) {
+    for (const mention of this.holder.querySelectorAll("a.editorjs-mention")) {
       const anchor = mention as HTMLAnchorElement;
       const item = this.readMentionFromElement(anchor);
       if (!item) {
@@ -210,17 +209,18 @@ export class EditorJSMentions {
     range.deleteContents();
 
     const fragment = range.createContextualFragment(normalized);
-    const pastedMentions = Array.from(fragment.querySelectorAll("a.editorjs-mention")) as HTMLAnchorElement[];
+    const pastedMentions = fragment.querySelectorAll("a.editorjs-mention");
     const last = fragment.lastChild;
     range.insertNode(fragment);
 
     for (const mention of pastedMentions) {
-      const item = this.readMentionFromElement(mention);
+      const anchor = mention as HTMLAnchorElement;
+      const item = this.readMentionFromElement(anchor);
       if (!item) {
         continue;
       }
-      const trigger = mention.dataset.mentionTrigger || "@";
-      this.applyMentionRendering(mention, item, trigger, "paste");
+      const trigger = anchor.dataset.mentionTrigger || "@";
+      this.applyMentionRendering(anchor, item, trigger, "paste");
     }
 
     if (last) {
@@ -545,11 +545,12 @@ export class EditorJSMentions {
 
 function normalizeMentionAnchorsHtml(html: string): string {
   const safeHtml = sanitizeHtml(html);
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(safeHtml, "text/html");
   const root = document.createElement("div");
-  root.innerHTML = safeHtml;
+  root.replaceChildren(...doc.body.childNodes);
 
-  const mentions = Array.from(root.querySelectorAll("a.editorjs-mention, span.editorjs-mention"));
-  for (const mention of mentions) {
+  for (const mention of root.querySelectorAll("a.editorjs-mention, span.editorjs-mention")) {
     const el = mention as HTMLElement;
     const text = (el.textContent || "").replace(/\u00A0/g, " ");
     const id = el.dataset.mentionId || mentionIdFromHref((el as HTMLAnchorElement).getAttribute("href")) || text;

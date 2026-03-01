@@ -1,9 +1,15 @@
 import type { MentionItem } from "./types";
 import { isValidUrl } from "./utils";
 
+/**
+ * Mentions tooltip for displaying detailed information about a selected or hovered mention.
+ */
 export class MentionsTooltip {
   private tooltipRoot: HTMLDivElement;
 
+  /**
+   * Initializes the MentionsTooltip and appends its root element to the body.
+   */
   constructor() {
     this.tooltipRoot = document.createElement("div");
     this.tooltipRoot.className = "editorjs-mention-tooltip";
@@ -11,6 +17,11 @@ export class MentionsTooltip {
     document.body.appendChild(this.tooltipRoot);
   }
 
+  /**
+   * Displays the tooltip near the given anchor element with data from the mention item.
+   * @param anchor - The anchor element to position the tooltip around.
+   * @param item - The mention item containing data to display.
+   */
   show(anchor: HTMLElement, item: MentionItem): void {
     const rect = anchor.getBoundingClientRect();
 
@@ -65,19 +76,34 @@ export class MentionsTooltip {
     this.tooltipRoot.style.top = `${Math.max(8, rect.bottom + 6)}px`;
   }
 
+  /**
+   * Hides the tooltip and clears its contents.
+   */
   hide(): void {
     this.tooltipRoot.style.display = "none";
     this.tooltipRoot.replaceChildren();
   }
 
+  /**
+   * Checks if the tooltip is currently visible.
+   * @returns True if the tooltip is visible, false otherwise.
+   */
   isVisible(): boolean {
     return this.tooltipRoot.style.display !== "none";
   }
 
+  /**
+   * Determines if the given DOM node is contained within the tooltip.
+   * @param node - The node to check.
+   * @returns True if the node is contained within the tooltip, false otherwise.
+   */
   contains(node: Node | null): boolean {
     return this.tooltipRoot.contains(node);
   }
 
+  /**
+   * Completely removes the tooltip from the DOM.
+   */
   destroy(): void {
     this.tooltipRoot.remove();
   }
