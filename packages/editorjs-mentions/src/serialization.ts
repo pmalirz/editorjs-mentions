@@ -91,12 +91,12 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
       return;
     }
 
-    for (const child of Array.from(el.childNodes)) {
+    for (const child of el.childNodes) {
       walk(child);
     }
   };
 
-  for (const node of Array.from(root.childNodes)) {
+  for (const node of root.childNodes) {
     walk(node);
   }
 

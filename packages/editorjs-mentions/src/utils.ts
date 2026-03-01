@@ -1,5 +1,7 @@
 /**
  * Escapes special characters in a string for safe usage in HTML.
+ * @param input - The string to escape.
+ * @returns The escaped HTML string.
  */
 export function escapeHtml(input: string): string {
   return input
@@ -12,6 +14,8 @@ export function escapeHtml(input: string): string {
 
 /**
  * Escapes special characters in a string for safe usage in HTML attributes.
+ * @param input - The string to escape.
+ * @returns The escaped HTML string suitable for attributes.
  */
 export function escapeAttr(input: string): string {
   return escapeHtml(input).replace(/`/g, "&#96;");
@@ -20,6 +24,8 @@ export function escapeAttr(input: string): string {
 /**
  * Checks if a URL is safe to use in href or src attributes.
  * Allows only whitelisted protocols.
+ * @param url - The URL to validate.
+ * @returns true if the URL is safe, false otherwise.
  */
 export function isValidUrl(url: string): boolean {
   if (!url) return false;
@@ -40,6 +46,8 @@ export function isValidUrl(url: string): boolean {
 /**
  * Sanitizes HTML string by removing dangerous tags and attributes.
  * Uses DOMParser to parse and traverse the HTML.
+ * @param html - The HTML string to sanitize.
+ * @returns The sanitized HTML string.
  */
 export function sanitizeHtml(html: string): string {
   const parser = new DOMParser();
@@ -54,7 +62,7 @@ export function sanitizeHtml(html: string): string {
   const all = doc.querySelectorAll("*");
   for (const el of all) {
     const attrsToRemove: string[] = [];
-    for (const attr of Array.from(el.attributes)) {
+    for (const attr of el.attributes) {
       if (attr.name.startsWith("on")) {
         attrsToRemove.push(attr.name);
       }

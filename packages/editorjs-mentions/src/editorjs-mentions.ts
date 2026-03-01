@@ -88,7 +88,7 @@ export class EditorJSMentions {
    * Should be called when the mention render context changes or when the content needs to be re-rendered.
    */
   refreshMentionRendering(): void {
-    const mentions = Array.from(this.holder.querySelectorAll("a.editorjs-mention"));
+    const mentions = this.holder.querySelectorAll("a.editorjs-mention");
     for (const mention of mentions) {
       const anchor = mention as HTMLAnchorElement;
       const item = this.readMentionFromElement(anchor);
@@ -210,17 +210,18 @@ export class EditorJSMentions {
     range.deleteContents();
 
     const fragment = range.createContextualFragment(normalized);
-    const pastedMentions = Array.from(fragment.querySelectorAll("a.editorjs-mention")) as HTMLAnchorElement[];
+    const pastedMentions = fragment.querySelectorAll("a.editorjs-mention");
     const last = fragment.lastChild;
     range.insertNode(fragment);
 
     for (const mention of pastedMentions) {
-      const item = this.readMentionFromElement(mention);
+      const item = this.readMentionFromElement(mention as HTMLAnchorElement);
       if (!item) {
         continue;
       }
-      const trigger = mention.dataset.mentionTrigger || "@";
-      this.applyMentionRendering(mention, item, trigger, "paste");
+      const anchor = mention as HTMLAnchorElement;
+      const trigger = anchor.dataset.mentionTrigger || "@";
+      this.applyMentionRendering(anchor, item, trigger, "paste");
     }
 
     if (last) {
@@ -545,10 +546,10 @@ export class EditorJSMentions {
 
 function normalizeMentionAnchorsHtml(html: string): string {
   const safeHtml = sanitizeHtml(html);
-  const root = document.createElement("div");
-  root.innerHTML = safeHtml;
+  const doc = new DOMParser().parseFromString(safeHtml, "text/html");
+  const root = doc.body;
 
-  const mentions = Array.from(root.querySelectorAll("a.editorjs-mention, span.editorjs-mention"));
+  const mentions = root.querySelectorAll("a.editorjs-mention, span.editorjs-mention");
   for (const mention of mentions) {
     const el = mention as HTMLElement;
     const text = (el.textContent || "").replace(/\u00A0/g, " ");
