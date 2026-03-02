@@ -1,5 +1,10 @@
 import type { MentionItem, MentionProvider, MentionProviderFn, MentionQuery } from "./types";
 
+/**
+ * Normalizes a mention provider config value into a standardized async function.
+ * @param provider - The mention provider to normalize.
+ * @returns An async function returning a promise of an array of `MentionItem` objects.
+ */
 export function normalizeProvider(provider: MentionProvider): MentionProviderFn {
   if (typeof provider === "function") {
     return provider;

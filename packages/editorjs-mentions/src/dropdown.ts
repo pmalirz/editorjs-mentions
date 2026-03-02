@@ -54,7 +54,7 @@ export class MentionsDropdown {
       });
 
       if (this.renderItem) {
-        row.innerHTML = this.renderItem(item);
+        row.replaceChildren(...new DOMParser().parseFromString(this.renderItem(item), "text/html").body.childNodes);
       } else {
         const avatar = document.createElement("img");
         avatar.className = "editorjs-mentions-item-avatar";

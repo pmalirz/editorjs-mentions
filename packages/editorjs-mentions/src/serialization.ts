@@ -9,6 +9,12 @@ type MentionPayload = {
   link?: string;
 };
 
+/**
+ * Encodes inline mention anchors in Editor.js output blocks into stable entity metadata.
+ * Useful before saving content to a database.
+ * @param output - The Editor.js output object to process.
+ * @returns A cloned output object with encoded mentions.
+ */
 export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -30,6 +36,12 @@ export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Decodes mention entity metadata from Editor.js output blocks back into inline HTML anchors.
+ * Useful before feeding stored content back into Editor.js instance.
+ * @param output - The Editor.js output object to process.
+ * @returns A cloned output object with restored mention HTML anchors.
+ */
 export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -47,6 +59,11 @@ export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Extracts plain text and an array of mention entities from an HTML string containing mention anchors.
+ * @param html - The HTML string to parse.
+ * @returns An object containing the extracted plain text and the array of `MentionEntity` objects.
+ */
 export function encodeMentionsFromHtml(html: string): { text: string; entities: MentionEntity[] } {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");

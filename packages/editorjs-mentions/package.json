@@ -1,6 +1,6 @@
 {
   "name": "@editorjs-mentions/plugin",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Mentions autocomplete plugin for Editor.js",
   "license": "MIT",
   "author": "editorjs-mentions contributors",
