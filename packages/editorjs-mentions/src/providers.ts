@@ -1,5 +1,10 @@
 import type { MentionItem, MentionProvider, MentionProviderFn, MentionQuery } from "./types";
 
+/**
+ * Normalizes a mention provider (either a function or an object) into a standardized provider function.
+ * @param provider - The mention provider to normalize.
+ * @returns A normalized mention provider function.
+ */
 export function normalizeProvider(provider: MentionProvider): MentionProviderFn {
   if (typeof provider === "function") {
     return provider;
@@ -50,4 +55,3 @@ export function createRestMentionProvider(options: RestProviderOptions): Mention
     return Array.isArray(maybeItems) ? maybeItems : [];
   };
 }
-

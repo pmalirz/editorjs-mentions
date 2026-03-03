@@ -31,10 +31,11 @@ describe("Paste Safety", () => {
   it("should remove scripts from pasted HTML", () => {
     mentions = new EditorJSMentions({
       holder: holder,
-      provider: async () => [],
+      provider: async () => []
     });
 
-    const maliciousHtml = '<div><script>alert("xss")</script><a class="editorjs-mention" data-mention-id="1">@User</a></div>';
+    const maliciousHtml =
+      '<div><script>alert("xss")</script><a class="editorjs-mention" data-mention-id="1">@User</a></div>';
 
     // Mock Selection
     const range = document.createRange();
@@ -46,7 +47,7 @@ describe("Paste Safety", () => {
       rangeCount: 1,
       removeAllRanges: jest.fn(),
       addRange: jest.fn(),
-      deleteFromDocument: jest.fn(),
+      deleteFromDocument: jest.fn()
     };
 
     // We need to overwrite getSelection on window
@@ -55,29 +56,29 @@ describe("Paste Safety", () => {
 
     // Mock createContextualFragment
     range.createContextualFragment = jest.fn((html) => {
-        const div = document.createElement('div');
-        div.innerHTML = html;
-        const frag = document.createDocumentFragment();
-        while (div.firstChild) {
-            frag.appendChild(div.firstChild);
-        }
-        return frag;
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      const frag = document.createDocumentFragment();
+      while (div.firstChild) {
+        frag.appendChild(div.firstChild);
+      }
+      return frag;
     });
 
     range.deleteContents = jest.fn();
     range.insertNode = jest.fn();
 
     // Mock ClipboardEvent
-    const event = new Event('paste', { bubbles: true, cancelable: true }) as ClipboardEvent;
+    const event = new Event("paste", { bubbles: true, cancelable: true }) as ClipboardEvent;
     const clipboardData = {
-        getData: jest.fn((type) => {
-            if (type === 'text/html') return maliciousHtml;
-            if (type === 'application/x-editorjs-mentions') return maliciousHtml;
-            return '';
-        }),
-        setData: jest.fn(),
+      getData: jest.fn((type) => {
+        if (type === "text/html") return maliciousHtml;
+        if (type === "application/x-editorjs-mentions") return maliciousHtml;
+        return "";
+      }),
+      setData: jest.fn()
     };
-    Object.defineProperty(event, 'clipboardData', {
+    Object.defineProperty(event, "clipboardData", {
       value: clipboardData
     });
 
@@ -88,9 +89,9 @@ describe("Paste Safety", () => {
     const calledHtml = (range.createContextualFragment as jest.Mock).mock.calls[0][0];
 
     // It should strip script tags
-    expect(calledHtml).not.toContain('<script>');
+    expect(calledHtml).not.toContain("<script>");
     // It should keep the mention anchor
-    expect(calledHtml).toContain('editorjs-mention');
+    expect(calledHtml).toContain("editorjs-mention");
 
     // Restore
     window.getSelection = originalGetSelection;

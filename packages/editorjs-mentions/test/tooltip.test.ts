@@ -8,7 +8,7 @@ describe("MentionsTooltip", () => {
     displayName: "John Doe",
     description: "Engineer",
     link: "http://example.com",
-    image: "http://example.com/image.png",
+    image: "http://example.com/image.png"
   };
 
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe("MentionsTooltip", () => {
       height: 20,
       x: 100,
       y: 180,
-      toJSON: () => {},
+      toJSON: () => {}
     });
 
     tooltip.show(anchor, mockItem);
@@ -58,7 +58,15 @@ describe("MentionsTooltip", () => {
   it("should hide the tooltip", () => {
     const anchor = document.createElement("a");
     jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
-      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+      left: 0,
+      bottom: 0,
+      top: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
     });
     tooltip.show(anchor, mockItem);
     expect(tooltip.isVisible()).toBe(true);
@@ -73,7 +81,15 @@ describe("MentionsTooltip", () => {
   it("should check if it contains a node", () => {
     const anchor = document.createElement("a");
     jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
-      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+      left: 0,
+      bottom: 0,
+      top: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
     });
     tooltip.show(anchor, mockItem);
 
@@ -87,11 +103,19 @@ describe("MentionsTooltip", () => {
   it("should not render dangerous links", () => {
     const maliciousItem: MentionItem = {
       ...mockItem,
-      link: "javascript:alert(1)",
+      link: "javascript:alert(1)"
     };
     const anchor = document.createElement("a");
     jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
-      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+      left: 0,
+      bottom: 0,
+      top: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
     });
 
     tooltip.show(anchor, maliciousItem);
@@ -104,11 +128,19 @@ describe("MentionsTooltip", () => {
   it("should fallback to placeholder if image is invalid protocol", () => {
     const maliciousItem: MentionItem = {
       ...mockItem,
-      image: "javascript:alert(1)",
+      image: "javascript:alert(1)"
     };
     const anchor = document.createElement("a");
     jest.spyOn(anchor, "getBoundingClientRect").mockReturnValue({
-      left: 0, bottom: 0, top: 0, right: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {}
+      left: 0,
+      bottom: 0,
+      top: 0,
+      right: 0,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
     });
 
     tooltip.show(anchor, maliciousItem);

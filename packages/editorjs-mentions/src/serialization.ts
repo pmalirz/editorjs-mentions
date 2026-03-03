@@ -9,6 +9,11 @@ type MentionPayload = {
   link?: string;
 };
 
+/**
+ * Encodes plain text mentions in Editor.js output blocks into structured mention entities.
+ * @param output - The original Editor.js output data.
+ * @returns A new Editor.js output object with encoded mentions.
+ */
 export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -30,6 +35,11 @@ export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Decodes mention entities in Editor.js output blocks back into HTML anchors.
+ * @param output - The Editor.js output data containing encoded mentions.
+ * @returns A new Editor.js output object with mentions restored as HTML anchors.
+ */
 export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -47,6 +57,11 @@ export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Parses an HTML string, extracts mention elements, and returns plain text with corresponding mention entities.
+ * @param html - The HTML string to parse.
+ * @returns An object containing the plain text and an array of extracted mention entities.
+ */
 export function encodeMentionsFromHtml(html: string): { text: string; entities: MentionEntity[] } {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
@@ -67,7 +82,8 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
 
     const el = node as HTMLElement;
     const isMention =
-      (el.tagName === "A" && (el.classList.contains("editorjs-mention") || mentionIdFromHref(el.getAttribute("href")))) ||
+      (el.tagName === "A" &&
+        (el.classList.contains("editorjs-mention") || mentionIdFromHref(el.getAttribute("href")))) ||
       !!el.dataset.mentionId;
 
     if (isMention) {
@@ -103,6 +119,12 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
   return { text, entities };
 }
 
+/**
+ * Merges plain text and mention entities to generate an HTML string with styled mention anchors.
+ * @param text - The plain text content.
+ * @param entities - An array of mention entities to insert.
+ * @returns The resulting HTML string with mention anchors.
+ */
 export function decodeMentionsToHtml(text: string, entities: MentionEntity[]): string {
   let cursor = 0;
   let html = "";

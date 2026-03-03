@@ -15,12 +15,12 @@ describe("Security", () => {
 
   test("MentionsDropdown escapes displayName in SVG placeholder", () => {
     const dropdown = new MentionsDropdown({
-      onSelect: () => {},
+      onSelect: () => {}
     });
 
     const maliciousItem = {
       id: "1",
-      displayName: '<script>alert(1)</script>',
+      displayName: "<script>alert(1)</script>"
     };
 
     dropdown.show({ left: 0, top: 0 }, [maliciousItem]);

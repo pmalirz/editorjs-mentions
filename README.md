@@ -19,9 +19,13 @@
 
 ## Monorepo Layout
 
-- [`packages/editorjs-mentions`](packages/editorjs-mentions): The core plugin package (TypeScript). **See this directory for plugin documentation.**
+- [`packages/editorjs-mentions`](packages/editorjs-mentions): The core plugin package (TypeScript). **See this directory for complete configuration and usage documentation.**
 - [`examples/server`](examples/server): Sample REST backend (Express + TypeScript).
 - [`examples/demo`](examples/demo): Minimal integration example.
+
+## Plugin Usage & Documentation
+
+Please refer to the [Plugin README](packages/editorjs-mentions/README.md) for detailed usage instructions, configuration options, and API documentation.
 
 ## Quick Start (Development)
 
@@ -57,10 +61,6 @@ Run demo app:
 ```bash
 npm run dev:demo
 ```
-
-## Plugin Usage
-
-Please refer to the [Plugin README](packages/editorjs-mentions/README.md) for detailed usage instructions, configuration options, and API documentation.
 
 ## Active Directory Example
 
