@@ -18,6 +18,10 @@ type ActiveContext = {
  * Adds mention support to Editor.js.
  */
 export class EditorJSMentions {
+  static get isReadOnlySupported(): boolean {
+    return true;
+  }
+
   private holder: HTMLElement;
   private config: Required<
     Omit<
