@@ -73,11 +73,11 @@ Shortcuts:
 
 ## Release & Publish
 
-Only plugin package version needs bumping.
+Monorepo packages versions are synchronized.
 
 Recommended flow:
 
-1. Bump plugin version:
+1. Bump version across all packages:
    - patch: `npm run version:plugin:patch`
    - minor: `npm run version:plugin:minor`
    - major: `npm run version:plugin:major`
@@ -86,13 +86,8 @@ Recommended flow:
 3. Verify:
    - `npm run typecheck --workspace @editorjs-mentions/plugin`
    - `npm run build --workspace @editorjs-mentions/plugin`
-4. Commit changed files (`packages/editorjs-mentions/package.json`, `package-lock.json`).
+4. Commit changed files (`package.json`, `packages/editorjs-mentions/package.json`, `examples/demo/package.json`, `examples/server/package.json`, `package-lock.json`).
 5. Create tag/release (for GitHub Actions publish workflow).
-
-Notes:
-
-- `examples/demo` uses local dependency (`file:../../packages/editorjs-mentions`) so demo version does not require manual sync.
-- Root package is private and does not require release version bump.
 
 License: MIT (`LICENSE`).
 

@@ -34,6 +34,10 @@ export class EditorJSMentions {
   private activeContext: ActiveContext | null = null;
   private destroyed = false;
 
+  public static get isReadOnlySupported(): boolean {
+    return true;
+  }
+
   /**
    * @param config - The configuration object.
    */
