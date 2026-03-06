@@ -20,10 +20,7 @@ npm i @editorjs/editorjs
 
 ```ts
 import EditorJS from "@editorjs/editorjs";
-import {
-  EditorJSMentions,
-  createRestMentionProvider
-} from "@editorjs-mentions/plugin";
+import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/plugin";
 
 const editor = new EditorJS({ holder: "editor" });
 await editor.isReady;
@@ -146,3 +143,4 @@ Expected endpoint example:
 - `createRestMentionProvider(options)`
 - `encodeMentionsInOutput(output)`
 - `decodeMentionsInOutput(output)`
+- `static get isReadOnlySupported()` - returns `true` to indicate read-only mode compatibility
