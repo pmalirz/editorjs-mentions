@@ -27,7 +27,7 @@ describe("EditorJSMentions", () => {
   it("should initialize correctly with valid config", () => {
     mentions = new EditorJSMentions({
       holder: "editor",
-      provider: async () => [],
+      provider: async () => []
     });
 
     expect(MentionsDropdown).toHaveBeenCalledTimes(1);
@@ -38,7 +38,7 @@ describe("EditorJSMentions", () => {
     expect(() => {
       new EditorJSMentions({
         holder: "non-existent",
-        provider: async () => [],
+        provider: async () => []
       });
     }).toThrow("Cannot find holder element by id: non-existent");
   });
@@ -46,7 +46,7 @@ describe("EditorJSMentions", () => {
   it("should accept holder as HTMLElement", () => {
     mentions = new EditorJSMentions({
       holder: holder,
-      provider: async () => [],
+      provider: async () => []
     });
     expect(MentionsDropdown).toHaveBeenCalledTimes(1);
   });
@@ -54,7 +54,7 @@ describe("EditorJSMentions", () => {
   it("should destroy correctly", () => {
     mentions = new EditorJSMentions({
       holder: "editor",
-      provider: async () => [],
+      provider: async () => []
     });
 
     const dropdownInstance = (MentionsDropdown as jest.Mock).mock.instances[0];

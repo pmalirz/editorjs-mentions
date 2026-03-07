@@ -35,6 +35,18 @@ export class EditorJSMentions {
   private destroyed = false;
 
   /**
+   * Indicates whether this plugin supports read-only mode.
+   * Required by Editor.js API.
+   *
+   * @returns true if read-only mode is supported.
+   */
+  static get isReadOnlySupported(): boolean {
+    return true;
+  }
+
+  /**
+   * Initializes the Editor.js mentions plugin.
+   *
    * @param config - The configuration object.
    */
   constructor(config: MentionsConfig) {

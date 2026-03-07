@@ -20,10 +20,7 @@ npm i @editorjs/editorjs
 
 ```ts
 import EditorJS from "@editorjs/editorjs";
-import {
-  EditorJSMentions,
-  createRestMentionProvider
-} from "@editorjs-mentions/plugin";
+import { EditorJSMentions, createRestMentionProvider } from "@editorjs-mentions/plugin";
 
 const editor = new EditorJS({ holder: "editor" });
 await editor.isReady;

@@ -38,4 +38,3 @@ function resolveSource(): MentionSource {
     userFilter
   });
 }
-
