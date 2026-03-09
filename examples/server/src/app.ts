@@ -30,4 +30,3 @@ export function createApp(source: MentionSource): express.Express {
 
   return app;
 }
-

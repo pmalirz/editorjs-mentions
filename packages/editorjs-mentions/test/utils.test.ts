@@ -16,7 +16,7 @@ describe("utils", () => {
 
   describe("escapeAttr", () => {
     it("should escape special characters including backticks", () => {
-      const input = '`test`';
+      const input = "`test`";
       const expected = "&#96;test&#96;";
       expect(escapeAttr(input)).toBe(expected);
     });
