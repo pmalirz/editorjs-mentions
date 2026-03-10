@@ -67,7 +67,8 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
 
     const el = node as HTMLElement;
     const isMention =
-      (el.tagName === "A" && (el.classList.contains("editorjs-mention") || mentionIdFromHref(el.getAttribute("href")))) ||
+      (el.tagName === "A" &&
+        (el.classList.contains("editorjs-mention") || mentionIdFromHref(el.getAttribute("href")))) ||
       !!el.dataset.mentionId;
 
     if (isMention) {

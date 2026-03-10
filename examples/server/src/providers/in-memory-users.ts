@@ -42,9 +42,7 @@ export class InMemoryUsersSource implements MentionSource {
   async search(query: MentionQuery): Promise<MentionItem[]> {
     const q = query.query.trim().toLowerCase();
 
-    const filtered = q
-      ? USERS.filter((user) => user.displayName.toLowerCase().includes(q))
-      : USERS;
+    const filtered = q ? USERS.filter((user) => user.displayName.toLowerCase().includes(q)) : USERS;
 
     return filtered.slice(0, query.limit);
   }

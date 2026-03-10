@@ -54,15 +54,16 @@ export function sanitizeHtml(html: string): string {
   const doc = parser.parseFromString(html, "text/html");
 
   const removeTags = ["script", "iframe", "object", "embed", "link", "style", "meta"];
-  removeTags.forEach((tag) => {
-    const elements = doc.querySelectorAll(tag);
-    elements.forEach((el) => el.remove());
-  });
+  const elements = doc.querySelectorAll(removeTags.join(","));
+  for (const el of elements) {
+    el.remove();
+  }
 
   const all = doc.querySelectorAll("*");
   for (const el of all) {
     const attrsToRemove: string[] = [];
-    for (const attr of el.attributes) {
+    for (let i = 0; i < el.attributes.length; i++) {
+      const attr = el.attributes[i];
       if (attr.name.startsWith("on")) {
         attrsToRemove.push(attr.name);
       }
@@ -72,7 +73,9 @@ export function sanitizeHtml(html: string): string {
         }
       }
     }
-    attrsToRemove.forEach((attr) => el.removeAttribute(attr));
+    for (const attr of attrsToRemove) {
+      el.removeAttribute(attr);
+    }
   }
 
   return doc.body.innerHTML;
