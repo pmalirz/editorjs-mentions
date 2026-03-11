@@ -50,4 +50,3 @@ export function createRestMentionProvider(options: RestProviderOptions): Mention
     return Array.isArray(maybeItems) ? maybeItems : [];
   };
 }
-

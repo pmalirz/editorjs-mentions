@@ -18,6 +18,14 @@ type ActiveContext = {
  * Adds mention support to Editor.js.
  */
 export class EditorJSMentions {
+  /**
+   * Specifies whether the plugin supports read-only mode.
+   * Required by Editor.js API.
+   */
+  static get isReadOnlySupported(): boolean {
+    return true;
+  }
+
   private holder: HTMLElement;
   private config: Required<
     Omit<

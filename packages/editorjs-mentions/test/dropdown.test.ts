@@ -7,7 +7,7 @@ describe("MentionsDropdown", () => {
   const mockItems: MentionItem[] = [
     { id: "1", displayName: "User 1" },
     { id: "2", displayName: "User 2" },
-    { id: "3", displayName: "User 3" },
+    { id: "3", displayName: "User 3" }
   ];
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe("MentionsDropdown", () => {
     window.HTMLElement.prototype.scrollIntoView = jest.fn();
     onSelectMock = jest.fn();
     dropdown = new MentionsDropdown({
-      onSelect: onSelectMock,
+      onSelect: onSelectMock
     });
   });
 

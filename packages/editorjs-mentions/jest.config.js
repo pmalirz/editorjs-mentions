@@ -4,6 +4,6 @@ module.exports = {
   testEnvironment: "jsdom",
   testMatch: ["**/?(*.)+(spec|test).[jt]s?(x)"],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
-  },
+    "^@/(.*)$": "<rootDir>/src/$1"
+  }
 };

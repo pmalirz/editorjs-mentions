@@ -38,4 +38,3 @@ jobs:
 
       - name: Build example server
         run: npm run build --workspace @editorjs-mentions/example-server
-
