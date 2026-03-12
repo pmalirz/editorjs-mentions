@@ -9,6 +9,12 @@ type MentionPayload = {
   link?: string;
 };
 
+/**
+ * Encodes mentions in an Editor.js output object to a format suitable for backend storage.
+ * Modifies blocks in place to extract inline mention anchors into standalone entities.
+ * @param output - The Editor.js output object.
+ * @returns A cloned output object with mentions encoded.
+ */
 export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -30,6 +36,12 @@ export function encodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Decodes mention entities from an Editor.js output object back into inline HTML anchors.
+ * Modifies blocks in place to replace entity markers with Editor.js compatible anchor tags.
+ * @param output - The Editor.js output object.
+ * @returns A cloned output object with mentions decoded.
+ */
 export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutputLike {
   const clone = cloneOutput(output);
 
@@ -47,6 +59,11 @@ export function decodeMentionsInOutput(output: EditorJSOutputLike): EditorJSOutp
   return clone;
 }
 
+/**
+ * Parses an HTML string, extracting mention anchors and returning raw text with corresponding entities.
+ * @param html - The HTML string to parse.
+ * @returns An object containing the raw text and extracted mention entities.
+ */
 export function encodeMentionsFromHtml(html: string): { text: string; entities: MentionEntity[] } {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, "text/html");
@@ -104,6 +121,12 @@ export function encodeMentionsFromHtml(html: string): { text: string; entities: 
   return { text, entities };
 }
 
+/**
+ * Assembles an HTML string by injecting mention anchors back into raw text based on entity ranges.
+ * @param text - The raw text containing mention boundaries.
+ * @param entities - An array of mention entities indicating the locations of mentions.
+ * @returns A synthesized HTML string with mention anchor tags.
+ */
 export function decodeMentionsToHtml(text: string, entities: MentionEntity[]): string {
   let cursor = 0;
   let html = "";

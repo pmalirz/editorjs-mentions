@@ -1,5 +1,10 @@
 import type { MentionItem, MentionProvider, MentionProviderFn, MentionQuery } from "./types";
 
+/**
+ * Normalizes a MentionProvider (function or object) into a MentionProviderFn.
+ * @param provider - The mention provider to normalize.
+ * @returns A normalized MentionProviderFn.
+ */
 export function normalizeProvider(provider: MentionProvider): MentionProviderFn {
   if (typeof provider === "function") {
     return provider;
@@ -8,6 +13,9 @@ export function normalizeProvider(provider: MentionProvider): MentionProviderFn 
   return provider.search.bind(provider);
 }
 
+/**
+ * Options for configuring the REST mention provider.
+ */
 export type RestProviderOptions = {
   endpoint: string;
   queryParam?: string;
