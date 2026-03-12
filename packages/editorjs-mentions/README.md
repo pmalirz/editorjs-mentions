@@ -143,3 +143,5 @@ Expected endpoint example:
 - `createRestMentionProvider(options)`
 - `encodeMentionsInOutput(output)`
 - `decodeMentionsInOutput(output)`
+- `encodeMentionsFromHtml(html)`
+- `decodeMentionsToHtml(text, entities)`

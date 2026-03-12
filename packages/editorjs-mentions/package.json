@@ -46,7 +46,7 @@
     "editor.js"
   ],
   "peerDependencies": {
-    "@editorjs/editorjs": "^2.0.0"
+    "@editorjs/editorjs": "^2.30.8"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
