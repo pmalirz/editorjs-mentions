@@ -15,9 +15,9 @@
     "dev:demo": "npm run dev --workspace @editorjs-mentions/example-demo",
     "dev:ldap:up": "docker compose -f examples/server/docker-compose.ldap.yml up -d",
     "dev:ldap:down": "docker compose -f examples/server/docker-compose.ldap.yml down",
-    "version:plugin:patch": "npm version patch --workspace @editorjs-mentions/plugin --no-git-tag-version",
-    "version:plugin:minor": "npm version minor --workspace @editorjs-mentions/plugin --no-git-tag-version",
-    "version:plugin:major": "npm version major --workspace @editorjs-mentions/plugin --no-git-tag-version",
+    "version:plugin:patch": "npm version patch --workspaces --include-workspace-root --no-git-tag-version",
+    "version:plugin:minor": "npm version minor --workspaces --include-workspace-root --no-git-tag-version",
+    "version:plugin:major": "npm version major --workspaces --include-workspace-root --no-git-tag-version",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
