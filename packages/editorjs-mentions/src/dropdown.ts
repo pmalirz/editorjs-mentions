@@ -44,7 +44,8 @@ export class MentionsDropdown {
     this.activeIndex = 0;
     this.root.replaceChildren();
 
-    items.forEach((item, index) => {
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index];
       const row = document.createElement("div");
       row.className = "editorjs-mentions-item";
       row.dataset.active = index === this.activeIndex ? "true" : "false";
@@ -54,7 +55,11 @@ export class MentionsDropdown {
       });
 
       if (this.renderItem) {
-        row.innerHTML = this.renderItem(item);
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(this.renderItem(item), "text/html");
+        while (doc.body.firstChild) {
+          row.appendChild(doc.body.firstChild);
+        }
       } else {
         const avatar = document.createElement("img");
         avatar.className = "editorjs-mentions-item-avatar";
@@ -88,7 +93,7 @@ export class MentionsDropdown {
       }
 
       this.root.appendChild(row);
-    });
+    }
 
     this.root.style.left = `${Math.max(8, position.left)}px`;
     this.root.style.top = `${Math.max(8, position.top)}px`;

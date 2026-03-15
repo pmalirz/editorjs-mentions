@@ -47,12 +47,11 @@ export class EditorJSMentions {
    */
   constructor(config: MentionsConfig) {
     this.holder =
-      typeof config.holder === "string"
-        ? (document.getElementById(config.holder) ??
-          (() => {
-            throw new Error(`Cannot find holder element by id: ${config.holder}`);
-          })())
-        : config.holder;
+      typeof config.holder === "string" ? (document.getElementById(config.holder) as HTMLElement) : config.holder;
+
+    if (!this.holder) {
+      throw new Error(`Cannot find holder element by id: ${config.holder}`);
+    }
 
     this.config = {
       triggerSymbols: config.triggerSymbols ?? ["@"],
