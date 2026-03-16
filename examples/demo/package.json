@@ -3,6 +3,15 @@
   "version": "0.1.6",
   "private": true,
   "type": "module",
+  "license": "MIT",
+  "author": "editorjs-mentions contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pmalirz/editorjs-mentions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pmalirz/editorjs-mentions/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",

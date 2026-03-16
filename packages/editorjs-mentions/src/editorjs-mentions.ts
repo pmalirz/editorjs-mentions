@@ -21,6 +21,7 @@ export class EditorJSMentions {
   /**
    * Specifies whether the plugin supports read-only mode.
    * Required by Editor.js API.
+   * @returns true if read-only mode is supported.
    */
   static get isReadOnlySupported(): boolean {
     return true;

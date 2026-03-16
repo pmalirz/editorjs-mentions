@@ -28,6 +28,7 @@ export type RestProviderOptions = {
 /**
  * Creates a mention provider that fetches data from a REST endpoint.
  * @param options - Configuration for the REST provider.
+ * @returns A mention provider function configured to call the REST endpoint.
  */
 export function createRestMentionProvider(options: RestProviderOptions): MentionProviderFn {
   const queryParam = options.queryParam ?? "query";

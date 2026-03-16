@@ -3,6 +3,11 @@
   "version": "0.1.6",
   "private": true,
   "description": "Sample REST server for editorjs-mentions",
+  "license": "MIT",
+  "author": "editorjs-mentions contributors",
+  "bugs": {
+    "url": "https://github.com/pmalirz/editorjs-mentions/issues"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
