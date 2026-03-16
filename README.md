@@ -73,7 +73,7 @@ Shortcuts:
 
 ## Release & Publish
 
-Only plugin package version needs bumping.
+All packages should have their versions bumped symmetrically.
 
 Recommended flow:
 
@@ -86,13 +86,13 @@ Recommended flow:
 3. Verify:
    - `npm run typecheck --workspace @editorjs-mentions/plugin`
    - `npm run build --workspace @editorjs-mentions/plugin`
-4. Commit changed files (`packages/editorjs-mentions/package.json`, `package-lock.json`).
+4. Commit changed files (all `package.json` files, `package-lock.json`).
 5. Create tag/release (for GitHub Actions publish workflow).
 
 Notes:
 
 - `examples/demo` uses local dependency (`file:../../packages/editorjs-mentions`) so demo version does not require manual sync.
-- Root package is private and does not require release version bump.
+- Root package version is also bumped.
 
 License: MIT (`LICENSE`).
 
