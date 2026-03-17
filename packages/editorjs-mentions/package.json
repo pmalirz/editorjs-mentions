@@ -6,7 +6,7 @@
   "author": "editorjs-mentions contributors",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pmalirz/editorjs-mentions",
+    "url": "git+https://github.com/pmalirz/editorjs-mentions.git",
     "directory": "packages/editorjs-mentions"
   },
   "bugs": {
