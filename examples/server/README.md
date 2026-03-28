@@ -23,6 +23,44 @@ If `examples/server/.env` does not enable LDAP (`AD_ENABLED=false`), endpoint:
 
 returns static demo users.
 
+## API Specification
+
+The mention plugin expects a standardized REST response. While this example uses `/api/mentions/users`, your endpoint can be named anything and can return any type of entity (users, tags, projects, etc.).
+
+### Query Parameters
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `query` | `string` | The search term entered by the user (after the trigger). |
+| `trigger` | `string` | The character that triggered the mention (e.g., `@`, `#`). |
+| `limit` | `number` | Maximum number of items to return (default: 8). |
+
+### Response Schema
+
+The endpoint must return an object with an `items` array:
+
+```json
+{
+  "items": [
+    {
+      "id": "unique-id-123",
+      "displayName": "John Doe",
+      "description": "Software Engineer",
+      "image": "https://example.com/avatar.png",
+      "link": "https://profile.example.com/johndoe"
+    }
+  ]
+}
+```
+
+**Model Fields:**
+
+- `id`: (Required) Unique identifier to be stored in the editor data.
+- `displayName`: (Required) Primary text shown in the suggestions list.
+- `description`: (Optional) Secondary text/sub-label for the item.
+- `image`: (Optional) URL for the thumbnail/avatar.
+- `link`: (Optional) URL used to wrap the mention in the saved content.
+
 ## LDAP Mode (Optional)
 
 This folder includes a local LDAP stack for testing AD/LDAP provider.
